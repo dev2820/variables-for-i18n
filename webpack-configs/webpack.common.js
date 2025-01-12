@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin');
 
 const paths = require('./paths.js');
 
@@ -19,8 +20,24 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.vanilla\.css$/i,
+        use: [
+          // MiniCssExtractPlugin.loader,
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: false, // Required as image imports should be handled via JS/TS import statements
+            },
+          },
+        ],
+      },
+      {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
+        // exclude vanilla extract files:
+        // https://github.com/webpack-contrib/css-loader/issues/672#issuecomment-362480828
+        exclude: /\.vanilla\.css$/i,
       },
       {
         test: /\.(png|jpg|gif|webp|svg)$/,
@@ -49,5 +66,6 @@ module.exports = {
       chunks: ['ui'],
     }),
     new HtmlWebpackInlineSourcePlugin(HtmlWebpackPlugin),
+    new VanillaExtractPlugin(),
   ],
 };

@@ -1,9 +1,8 @@
 {
   "name": "i18n-export",
   "version": "1.0.0",
-  "description": "boilerplate for figma plugin",
+  "description": "figma plugin",
   "main": "dist/plugin.js",
-  "repository": "https://github.com/hseoy/figma-plugin-react-boilerplate.git",
   "author": "dev2820",
   "scripts": {
     "watch": "webpack --mode=development --watch",
@@ -16,9 +15,10 @@
   "devDependencies": {
     "@figma/plugin-typings": "^1.41.1",
     "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
+    "@types/react-dom": "^17.0.26",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "@vanilla-extract/webpack-plugin": "^2.3.16",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.5.1",
@@ -36,8 +36,7 @@
     "fork-ts-checker-webpack-plugin": "^6.5.0",
     "html-webpack-inline-source-plugin": "^1.0.0-beta.2",
     "html-webpack-plugin": "^5.5.0",
-    "jest": "^27.4.7",
-    "jest-transform-stub": "^2.0.0",
+    "mini-css-extract-plugin": "^2.9.2",
     "prettier": "^2.5.1",
     "style-loader": "^3.3.1",
     "ts-jest": "^27.1.3",
