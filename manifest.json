@@ -2,17 +2,13 @@
   "name": "I18n export",
   "id": "1460236921481289701",
   "api": "1.0.0",
-  "main": "code.js",
+  "main": "dist/plugin.js",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
-  "editorType": [
-    "figma"
-  ],
+  "editorType": ["figma"],
   "ui": "dist/ui.html",
   "networkAccess": {
-    "allowedDomains": [
-      "none"
-    ]
+    "allowedDomains": ["none"]
   }
 }
