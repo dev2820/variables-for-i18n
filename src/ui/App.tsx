@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import styles from './App.css';
+import { Button } from './components/Button/Button';
+import EventType from '../shared/event-type';
+import { Channel } from './utils/channel';
 
 type LocalVariable = {
   id: Variable['id'];
@@ -14,7 +16,9 @@ type LoadedLocalVariableTable = {
   rows: LocalVariable[];
 };
 type Header = { id: string; name: string };
-type Row = LocalVariable;
+
+Channel.init();
+
 function App() {
   const [headers, setHeaders] = useState<Header[]>([]);
   const [rows, setRows] = useState<LocalVariable[]>([]);
@@ -22,35 +26,49 @@ function App() {
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
-    window.onmessage = (event) => {
-      const { type, payload } = event.data.pluginMessage || {};
-      console.log(type, payload);
+    const removeListeners = [];
+    removeListeners.push(
+      Channel.onMessage(EventType.CopyEnSuccess, () => {
+        window.alert('hello');
+      }),
+      Channel.onMessage(EventType.LoadedLocalVariableTable, (payload) => {
+        const data = payload as LoadedLocalVariableTable;
+        setHeaders(data.headers);
+        setRows(data.rows);
+      }),
+    );
 
-      if (type === 'loaded-local-variable-table') {
-        const _payload = payload as LoadedLocalVariableTable;
-        setHeaders(_payload.headers);
-        setRows(_payload.rows);
-      }
+    return () => {
+      removeListeners.forEach((l) => l());
     };
   }, []);
 
+  const handleClickCopyEn = () => {
+    Channel.sendMessage(EventType.CopyEnRequest, { foo: 'bar' });
+  };
+
   return (
     <div>
-      <h1>Hello World</h1>
-      <TestComponent />
+      <menu>
+        <li>
+          <Button onClick={handleClickCopyEn}>Copy En</Button>
+        </li>
+      </menu>
       <table>
-        <th>
-          <td>Key</td>
-          {headers.map((h, i) => (
-            <td key={i}>{h.name}</td>
-          ))}
-        </th>
+        <thead>
+          <tr>
+            <th>Key</th>
+            {headers.map((h) => (
+              <th key={h.name}>{h.name}</th>
+            ))}
+          </tr>
+        </thead>
         <tbody>
-          {rows.map((r, i) => (
-            <tr key={i}>
+          {rows.map((r) => (
+            <tr key={r.id}>
               <td>{r.name}</td>
-              {Object.values(r.valuesByHeader).map((value) => (
-                <td>{value}</td>
+              {Object.entries(r.valuesByHeader).map((entry) => (
+                <td key={entry[0]}>{entry[1]}</td>
               ))}
             </tr>
           ))}
@@ -59,9 +77,5 @@ function App() {
     </div>
   );
 }
-
-const TestComponent = () => {
-  return <div className={styles.TestComponent}>Vanilla Extract Test</div>;
-};
 
 export default App;

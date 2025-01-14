@@ -3,7 +3,6 @@ module.exports = {
     'airbnb',
     'airbnb-typescript',
     'prettier',
-    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
@@ -47,11 +46,5 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
-  overrides: [
-    {
-      files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
-      extends: ['plugin:testing-library/react'],
-    },
-  ],
-  ignorePatterns: ['node_modules/', 'dist', '**/*.js', 'setupTests.ts'],
+  ignorePatterns: ['node_modules/', 'dist', '**/*.js'],
 };

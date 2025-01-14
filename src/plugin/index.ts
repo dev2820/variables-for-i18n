@@ -1,3 +1,5 @@
+import EventType from '../shared/event-type';
+
 function showPluginUI() {
   figma.showUI(__html__, {
     width: 400,
@@ -12,7 +14,7 @@ function setup() {
     const collections =
       await figma.variables.getLocalVariableCollectionsAsync();
     const i18n = collections.find((col) => col.name === 'i18n');
-    const modes = i18n.modes;
+    const { modes } = i18n;
     const localVariables = await figma.variables.getLocalVariablesAsync();
 
     const localVars = localVariables.map((v) => {
@@ -25,7 +27,7 @@ function setup() {
     });
 
     figma.ui.postMessage({
-      type: 'loaded-local-variable-table',
+      type: EventType.LoadedLocalVariableTable,
       payload: {
         headers: modes,
         rows: localVars,
@@ -34,7 +36,11 @@ function setup() {
   });
 
   figma.ui.onmessage = (msg) => {
-    // handle msg
+    if (msg.type === EventType.CopyEnRequest) {
+      figma.ui.postMessage({
+        type: EventType.CopyEnSuccess,
+      });
+    }
   };
 }
 
