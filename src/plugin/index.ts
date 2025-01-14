@@ -7,15 +7,25 @@ function showPluginUI() {
   });
 }
 
+async function getModes() {
+  const collections = await figma.variables.getLocalVariableCollectionsAsync();
+  const i18n = collections.find((col) => col.name === 'i18n');
+  const { modes } = i18n;
+
+  return modes;
+}
+
+async function getLocalVariables() {
+  const localVariables = await figma.variables.getLocalVariablesAsync();
+
+  return localVariables;
+}
 function setup() {
   figma.on('run', async () => {
     showPluginUI();
 
-    const collections =
-      await figma.variables.getLocalVariableCollectionsAsync();
-    const i18n = collections.find((col) => col.name === 'i18n');
-    const { modes } = i18n;
-    const localVariables = await figma.variables.getLocalVariablesAsync();
+    const modes = await getModes();
+    const localVariables = await getLocalVariables();
 
     const localVars = localVariables.map((v) => {
       return {
@@ -35,13 +45,45 @@ function setup() {
     });
   });
 
-  figma.ui.onmessage = (msg) => {
-    if (msg.type === EventType.CopyEnRequest) {
+  figma.ui.onmessage = async (msg) => {
+    if (msg.type === EventType.RequestToJSON) {
+      /**
+       * convert to json
+       */
+      const modes = await getModes();
+      const localVariables = await getLocalVariables();
+
+      const jsonStrEn = convertToJsonStr(localVariables, modes[0]);
+
       figma.ui.postMessage({
-        type: EventType.CopyEnSuccess,
+        type: EventType.SuccessToJSON,
+        payload: jsonStrEn,
       });
     }
   };
+}
+
+function convertToJsonStr(
+  variables: Variable[],
+  mode: {
+    modeId: string;
+    name: string;
+  },
+) {
+  const entries = variables.map((variable) => [
+    variable.name,
+    variable.valuesByMode[mode.modeId],
+  ]);
+
+  return `
+{
+${entries
+  .map(([key, value]) => {
+    return `  "${key}": "${value}",`;
+  })
+  .join('\n')}  
+}
+`;
 }
 
 function main() {

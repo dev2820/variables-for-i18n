@@ -1,6 +1,6 @@
 const EventType = {
-  CopyEnRequest: 'CopyEnRequest',
-  CopyEnSuccess: 'CopyEnSuccess',
+  RequestToJSON: 'RequestToJSON',
+  SuccessToJSON: 'SuccessToJSON',
   LoadedLocalVariableTable: 'LoadedLocalVariableTable',
 } as const;
 

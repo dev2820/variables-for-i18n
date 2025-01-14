@@ -1,9 +1,10 @@
 import { style } from '@vanilla-extract/css';
 
 const styles = {
-  TestComponent: style({
+  CodeBlock: style({
     padding: 10,
-    color: 'red',
+    background: '#cccccc',
+    color: '#333333',
   }),
 };
 
