@@ -20,29 +20,33 @@ async function getLocalVariables() {
 
   return localVariables;
 }
+
+async function loadAndSendVariables() {
+  const modes = await getModes();
+  const localVariables = await getLocalVariables();
+
+  const localVars = localVariables.map((v) => {
+    return {
+      id: v.id,
+      resolvedType: v.resolvedType,
+      name: v.name,
+      valuesByHeader: v.valuesByMode,
+    };
+  });
+
+  figma.ui.postMessage({
+    type: EventType.LoadedLocalVariableTable,
+    payload: {
+      headers: modes,
+      rows: localVars,
+    },
+  });
+}
 function setup() {
   figma.on('run', async () => {
     showPluginUI();
 
-    const modes = await getModes();
-    const localVariables = await getLocalVariables();
-
-    const localVars = localVariables.map((v) => {
-      return {
-        id: v.id,
-        resolvedType: v.resolvedType,
-        name: v.name,
-        valuesByHeader: v.valuesByMode,
-      };
-    });
-
-    figma.ui.postMessage({
-      type: EventType.LoadedLocalVariableTable,
-      payload: {
-        headers: modes,
-        rows: localVars,
-      },
-    });
+    loadAndSendVariables();
   });
 
   figma.ui.onmessage = async (msg) => {
@@ -59,6 +63,23 @@ function setup() {
         type: EventType.SuccessToJSON,
         payload: jsonStrEn,
       });
+    }
+    if (msg.type === EventType.ChangeVariableValue) {
+      const { key, mode, value } = msg.payload;
+      const variable = await figma.variables.getVariableByIdAsync(key);
+      if (variable) {
+        variable.setValueForMode(mode, value);
+      }
+      await loadAndSendVariables();
+    }
+    if (msg.type === EventType.DeleteVariable) {
+      const { key } = msg.payload;
+      console.log(key);
+      const variable = await figma.variables.getVariableByIdAsync(key);
+      if (variable) {
+        variable.remove();
+      }
+      await loadAndSendVariables();
     }
   };
 }

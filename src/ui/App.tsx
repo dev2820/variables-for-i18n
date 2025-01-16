@@ -12,11 +12,11 @@ type LocalVariable = {
   // values: figma.variables.getVariableById(lv.id),
 };
 
+type Header = { modeId: string; name: string };
 type LoadedLocalVariableTable = {
-  headers: { id: string; name: string }[];
+  headers: Header[];
   rows: LocalVariable[];
 };
-type Header = { id: string; name: string };
 
 Channel.init();
 
@@ -24,6 +24,9 @@ function App() {
   const [headers, setHeaders] = useState<Header[]>([]);
   const [rows, setRows] = useState<LocalVariable[]>([]);
   const [jsonStr, setJsonStr] = useState<string>('');
+  const [keyStr, setKeyStr] = useState<string>('');
+  const [modeStr, setModeStr] = useState<string>('');
+  const [valueStr, setValueStr] = useState<string>('');
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
@@ -46,7 +49,36 @@ function App() {
   }, []);
 
   const handleClickCopyEn = () => {
-    Channel.sendMessage(EventType.RequestToJSON, { foo: 'bar' });
+    Channel.sendMessage(EventType.RequestToJSON, '');
+  };
+
+  const handleChangeKeyValue = () => {
+    /**
+     * modify request
+     */
+    const targetCell = rows.find((r) => r.name === keyStr);
+    const targetMode = headers.find((h) => h.name === modeStr);
+    if (targetMode && targetCell) {
+      Channel.sendMessage(EventType.ChangeVariableValue, {
+        key: targetCell.id,
+        mode: targetMode.modeId,
+        value: valueStr,
+      });
+    } else {
+      alert('modeId not exist');
+    }
+  };
+
+  const handleDeleteKeyValue = () => {
+    /**
+     * delete request
+     */
+    const targetCell = rows.find((r) => r.name === keyStr);
+    if (targetCell) {
+      Channel.sendMessage(EventType.DeleteVariable, {
+        key: targetCell.id,
+      });
+    }
   };
 
   return (
@@ -56,6 +88,35 @@ function App() {
           <Button onClick={handleClickCopyEn}>Extract En</Button>
         </li>
       </menu>
+      <fieldset>
+        <label htmlFor="keyStr">Key</label>
+        <input
+          id="keyStr"
+          type="text"
+          onChange={(e) => setKeyStr(e.target.value)}
+        />
+        <br />
+        <label htmlFor="mode">Mode</label>
+        <input
+          id="mode"
+          type="text"
+          onChange={(e) => setModeStr(e.target.value)}
+        />
+        <br />
+        <label htmlFor="value">Value</label>
+        <input
+          id="value"
+          type="text"
+          onChange={(e) => setValueStr(e.target.value)}
+        />
+        <br />
+        <button type="button" onClick={handleChangeKeyValue}>
+          change
+        </button>
+        <button type="button" onClick={handleDeleteKeyValue}>
+          delete
+        </button>
+      </fieldset>
       <table>
         <thead>
           <tr>
