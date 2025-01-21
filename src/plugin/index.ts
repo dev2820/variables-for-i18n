@@ -2,7 +2,7 @@ import EventType from '../shared/event-type';
 
 function showPluginUI() {
   figma.showUI(__html__, {
-    width: 400,
+    width: 800,
     height: 600,
   });
 }
