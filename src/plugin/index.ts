@@ -10,23 +10,34 @@ function showPluginUI() {
   });
 }
 
+const toVariableData = (variable: Variable) => {
+  return {
+    id: variable.id,
+    resolvedType: variable.resolvedType,
+    name: variable.name,
+    key: variable.key,
+    description: variable.description,
+    valuesByMode: variable.valuesByMode,
+  };
+};
 function setup() {
   figma.on('run', async () => {
     showPluginUI();
-
-    const modes = await i18nCollection.getModes();
-    const vars = await i18nCollection.getVariables();
-
-    figma.ui.postMessage({
-      type: EventType.LoadedLocalVariableTable,
-      payload: {
-        modes: modes,
-        vars: vars,
-      },
-    });
   });
 
   figma.ui.onmessage = async (msg) => {
+    if (msg.type === EventType.RequestLoadVariableData) {
+      const modes = await i18nCollection.getModes();
+      const vars = await i18nCollection.getVariables();
+
+      figma.ui.postMessage({
+        type: EventType.UpdateVariableData,
+        payload: {
+          modes: modes,
+          vars: vars.map(toVariableData),
+        },
+      });
+    }
     if (msg.type === EventType.RequestToJSON) {
       /**
        * convert to json
@@ -51,10 +62,24 @@ function setup() {
       const vars = await i18nCollection.getVariables();
 
       figma.ui.postMessage({
-        type: EventType.LoadedLocalVariableTable,
+        type: EventType.UpdateVariableData,
         payload: {
           modes: modes,
-          vars: vars,
+          vars: vars.map(toVariableData),
+        },
+      });
+    }
+    if (msg.type === EventType.CreateVariable) {
+      const { name, valuesByMode } = msg.payload;
+      await i18nCollection.createVariable(name, valuesByMode);
+      const modes = await i18nCollection.getModes();
+      const vars = await i18nCollection.getVariables();
+
+      figma.ui.postMessage({
+        type: EventType.UpdateVariableData,
+        payload: {
+          modes: modes,
+          vars: vars.map(toVariableData),
         },
       });
     }
@@ -65,10 +90,10 @@ function setup() {
       const vars = await i18nCollection.getVariables();
 
       figma.ui.postMessage({
-        type: EventType.LoadedLocalVariableTable,
+        type: EventType.UpdateVariableData,
         payload: {
           modes: modes,
-          vars: vars,
+          vars: vars.map(toVariableData),
         },
       });
     }

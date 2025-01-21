@@ -63,6 +63,24 @@ class VariableCollectionSchema {
       return false;
     }
   }
+  async createVariable(name: string, valuesByMode: Record<string, string>) {
+    try {
+      const collection = await this.getCollection();
+      const variable = figma.variables.createVariable(
+        name,
+        collection,
+        'STRING',
+      );
+      Object.entries(valuesByMode).forEach(([modeId, value]) => {
+        variable.setValueForMode(modeId, value);
+      });
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
   async deleteVariableById(variableKey: Variable['key']) {
     try {
       const variable = await figma.variables.getVariableByIdAsync(variableKey);

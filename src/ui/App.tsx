@@ -3,18 +3,18 @@ import { Button } from './components/Button/Button';
 import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
-
-type Mode = { modeId: string; name: string };
+import { useI18nVariables } from './hooks/useI18nVariables';
 
 Channel.init();
 
 function App() {
-  const [headers, setHeaders] = useState<Mode[]>([]);
-  const [rows, setRows] = useState<Variable[]>([]);
   const [jsonStr, setJsonStr] = useState<string>('');
   const [keyStr, setKeyStr] = useState<string>('');
   const [modeStr, setModeStr] = useState<string>('');
   const [valueStr, setValueStr] = useState<string>('');
+  const [nameStr, setNameStr] = useState<string>('');
+
+  const { isLoaded, modes, vars } = useI18nVariables();
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
@@ -23,11 +23,6 @@ function App() {
       Channel.onMessage(EventType.SuccessToJSON, (payload) => {
         const result = payload as string;
         setJsonStr(result);
-      }),
-      Channel.onMessage(EventType.LoadedLocalVariableTable, (payload) => {
-        const data = payload as { modes: Mode[]; vars: Variable[] };
-        setHeaders(data.modes);
-        setRows(data.vars);
       }),
     );
 
@@ -44,8 +39,8 @@ function App() {
     /**
      * modify request
      */
-    const targetCell = rows.find((r) => r.name === keyStr);
-    const targetMode = headers.find((h) => h.name === modeStr);
+    const targetCell = vars.find((r) => r.name === keyStr);
+    const targetMode = modes.find((h) => h.name === modeStr);
     if (targetMode && targetCell) {
       Channel.sendMessage(EventType.ChangeVariableValue, {
         key: targetCell.id,
@@ -61,14 +56,28 @@ function App() {
     /**
      * delete request
      */
-    const targetCell = rows.find((r) => r.name === keyStr);
+    const targetCell = vars.find((r) => r.name === keyStr);
     if (targetCell) {
       Channel.sendMessage(EventType.DeleteVariable, {
         key: targetCell.id,
       });
     }
   };
+  const handleCreateKeyValue = () => {
+    /**
+     * create request
+     */
+    Channel.sendMessage(EventType.CreateVariable, {
+      name: keyStr,
+      valuesByMode: {
+        [modes[0].modeId]: valueStr,
+      },
+    });
+  };
 
+  if (!isLoaded) {
+    return <div>loading...</div>;
+  }
   return (
     <div>
       <menu>
@@ -101,6 +110,9 @@ function App() {
         <button type="button" onClick={handleChangeKeyValue}>
           change
         </button>
+        <button type="button" onClick={handleCreateKeyValue}>
+          create
+        </button>
         <button type="button" onClick={handleDeleteKeyValue}>
           delete
         </button>
@@ -109,13 +121,13 @@ function App() {
         <thead>
           <tr>
             <th>Key</th>
-            {headers.map((h) => (
-              <th key={h.name}>{h.name}</th>
+            {modes.map((m) => (
+              <th key={m.name}>{m.name}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {vars.map((r) => (
             <tr key={r.id}>
               <td>{r.name}</td>
               {Object.entries(r.valuesByMode).map((entry) => (
