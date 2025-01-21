@@ -17,20 +17,11 @@ function setup() {
     const modes = await i18nCollection.getModes();
     const vars = await i18nCollection.getVariables();
 
-    const tableData = vars.map((v) => {
-      return {
-        id: v.id,
-        resolvedType: v.resolvedType,
-        name: v.name,
-        valuesByHeader: v.valuesByMode,
-      };
-    });
-
     figma.ui.postMessage({
       type: EventType.LoadedLocalVariableTable,
       payload: {
-        headers: modes,
-        rows: tableData,
+        modes: modes,
+        vars: vars,
       },
     });
   });
@@ -59,20 +50,11 @@ function setup() {
       const modes = await i18nCollection.getModes();
       const vars = await i18nCollection.getVariables();
 
-      const tableData = vars.map((v) => {
-        return {
-          id: v.id,
-          resolvedType: v.resolvedType,
-          name: v.name,
-          valuesByHeader: v.valuesByMode,
-        };
-      });
-
       figma.ui.postMessage({
         type: EventType.LoadedLocalVariableTable,
         payload: {
-          headers: modes,
-          rows: tableData,
+          modes: modes,
+          vars: vars,
         },
       });
     }
@@ -82,20 +64,11 @@ function setup() {
       const modes = await i18nCollection.getModes();
       const vars = await i18nCollection.getVariables();
 
-      const tableData = vars.map((v) => {
-        return {
-          id: v.id,
-          resolvedType: v.resolvedType,
-          name: v.name,
-          valuesByHeader: v.valuesByMode,
-        };
-      });
-
       figma.ui.postMessage({
         type: EventType.LoadedLocalVariableTable,
         payload: {
-          headers: modes,
-          rows: tableData,
+          modes: modes,
+          vars: vars,
         },
       });
     }

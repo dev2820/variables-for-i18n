@@ -4,25 +4,13 @@ import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
 
-type LocalVariable = {
-  id: Variable['id'];
-  resolvedType: Variable['resolvedType'];
-  name: Variable['name'];
-  valuesByHeader: Variable['valuesByMode'];
-  // values: figma.variables.getVariableById(lv.id),
-};
-
-type Header = { modeId: string; name: string };
-type LoadedLocalVariableTable = {
-  headers: Header[];
-  rows: LocalVariable[];
-};
+type Mode = { modeId: string; name: string };
 
 Channel.init();
 
 function App() {
-  const [headers, setHeaders] = useState<Header[]>([]);
-  const [rows, setRows] = useState<LocalVariable[]>([]);
+  const [headers, setHeaders] = useState<Mode[]>([]);
+  const [rows, setRows] = useState<Variable[]>([]);
   const [jsonStr, setJsonStr] = useState<string>('');
   const [keyStr, setKeyStr] = useState<string>('');
   const [modeStr, setModeStr] = useState<string>('');
@@ -37,9 +25,9 @@ function App() {
         setJsonStr(result);
       }),
       Channel.onMessage(EventType.LoadedLocalVariableTable, (payload) => {
-        const data = payload as LoadedLocalVariableTable;
-        setHeaders(data.headers);
-        setRows(data.rows);
+        const data = payload as { modes: Mode[]; vars: Variable[] };
+        setHeaders(data.modes);
+        setRows(data.vars);
       }),
     );
 
@@ -130,7 +118,7 @@ function App() {
           {rows.map((r) => (
             <tr key={r.id}>
               <td>{r.name}</td>
-              {Object.entries(r.valuesByHeader).map((entry) => (
+              {Object.entries(r.valuesByMode).map((entry) => (
                 <td key={entry[0]}>{entry[1]}</td>
               ))}
             </tr>
