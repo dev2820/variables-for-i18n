@@ -1,4 +1,7 @@
 import EventType from '../shared/event-type';
+import VariableCollectionSchema from './VariableCollectionSchema';
+
+const i18nCollection = new VariableCollectionSchema('i18n');
 
 function showPluginUI() {
   figma.showUI(__html__, {
@@ -7,46 +10,29 @@ function showPluginUI() {
   });
 }
 
-async function getModes() {
-  const collections = await figma.variables.getLocalVariableCollectionsAsync();
-  const i18n = collections.find((col) => col.name === 'i18n');
-  const { modes } = i18n;
-
-  return modes;
-}
-
-async function getLocalVariables() {
-  const localVariables = await figma.variables.getLocalVariablesAsync();
-
-  return localVariables;
-}
-
-async function loadAndSendVariables() {
-  const modes = await getModes();
-  const localVariables = await getLocalVariables();
-
-  const localVars = localVariables.map((v) => {
-    return {
-      id: v.id,
-      resolvedType: v.resolvedType,
-      name: v.name,
-      valuesByHeader: v.valuesByMode,
-    };
-  });
-
-  figma.ui.postMessage({
-    type: EventType.LoadedLocalVariableTable,
-    payload: {
-      headers: modes,
-      rows: localVars,
-    },
-  });
-}
 function setup() {
   figma.on('run', async () => {
     showPluginUI();
 
-    loadAndSendVariables();
+    const modes = await i18nCollection.getModes();
+    const vars = await i18nCollection.getVariables();
+
+    const tableData = vars.map((v) => {
+      return {
+        id: v.id,
+        resolvedType: v.resolvedType,
+        name: v.name,
+        valuesByHeader: v.valuesByMode,
+      };
+    });
+
+    figma.ui.postMessage({
+      type: EventType.LoadedLocalVariableTable,
+      payload: {
+        headers: modes,
+        rows: tableData,
+      },
+    });
   });
 
   figma.ui.onmessage = async (msg) => {
@@ -54,57 +40,66 @@ function setup() {
       /**
        * convert to json
        */
-      const modes = await getModes();
-      const localVariables = await getLocalVariables();
+      const modes = await i18nCollection.getModes();
 
-      const jsonStrEn = convertToJsonStr(localVariables, modes[0]);
+      let result = '';
+      for (const mode of modes) {
+        const jsonStr = await i18nCollection.toJsonStrByMode(mode.modeId);
+        result += `/* ${mode.name} */` + jsonStr + '\n';
+      }
 
       figma.ui.postMessage({
         type: EventType.SuccessToJSON,
-        payload: jsonStrEn,
+        payload: result,
       });
     }
     if (msg.type === EventType.ChangeVariableValue) {
       const { key, mode, value } = msg.payload;
-      const variable = await figma.variables.getVariableByIdAsync(key);
-      if (variable) {
-        variable.setValueForMode(mode, value);
-      }
-      await loadAndSendVariables();
+      await i18nCollection.updateVariableById(key, mode, value);
+      const modes = await i18nCollection.getModes();
+      const vars = await i18nCollection.getVariables();
+
+      const tableData = vars.map((v) => {
+        return {
+          id: v.id,
+          resolvedType: v.resolvedType,
+          name: v.name,
+          valuesByHeader: v.valuesByMode,
+        };
+      });
+
+      figma.ui.postMessage({
+        type: EventType.LoadedLocalVariableTable,
+        payload: {
+          headers: modes,
+          rows: tableData,
+        },
+      });
     }
     if (msg.type === EventType.DeleteVariable) {
       const { key } = msg.payload;
-      console.log(key);
-      const variable = await figma.variables.getVariableByIdAsync(key);
-      if (variable) {
-        variable.remove();
-      }
-      await loadAndSendVariables();
+      await i18nCollection.deleteVariableById(key);
+      const modes = await i18nCollection.getModes();
+      const vars = await i18nCollection.getVariables();
+
+      const tableData = vars.map((v) => {
+        return {
+          id: v.id,
+          resolvedType: v.resolvedType,
+          name: v.name,
+          valuesByHeader: v.valuesByMode,
+        };
+      });
+
+      figma.ui.postMessage({
+        type: EventType.LoadedLocalVariableTable,
+        payload: {
+          headers: modes,
+          rows: tableData,
+        },
+      });
     }
   };
-}
-
-function convertToJsonStr(
-  variables: Variable[],
-  mode: {
-    modeId: string;
-    name: string;
-  },
-) {
-  const entries = variables.map((variable) => [
-    variable.name,
-    variable.valuesByMode[mode.modeId],
-  ]);
-
-  return `
-{
-${entries
-  .map(([key, value]) => {
-    return `  "${key}": "${value}",`;
-  })
-  .join('\n')}  
-}
-`;
 }
 
 function main() {
