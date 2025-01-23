@@ -8,6 +8,12 @@ function showPluginUI() {
     width: 800,
     height: 600,
   });
+  figma.clientStorage
+    .getAsync('size')
+    .then((size) => {
+      if (size) figma.ui.resize(size.w, size.h);
+    })
+    .catch((err) => {});
 }
 
 const toVariableData = (variable: Variable) => {
@@ -26,6 +32,10 @@ function setup() {
   });
 
   figma.ui.onmessage = async (msg) => {
+    if (msg.type === EventType.ResizeWindow) {
+      figma.ui.resize(msg.size.w, msg.size.h);
+      figma.clientStorage.setAsync('size', msg.size).catch((err) => {}); // save size
+    }
     if (msg.type === EventType.RequestLoadVariableData) {
       const modes = await i18nCollection.getModes();
       const vars = await i18nCollection.getVariables();

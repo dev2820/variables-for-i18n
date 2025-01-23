@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './components/Button/Button';
 import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
@@ -6,6 +6,8 @@ import styles from './App.css';
 import { useI18nVariables } from './hooks/useI18nVariables';
 import { Table } from './components/Table/Table';
 import { themeClass } from './theme.css';
+import { Corner } from './components/Corner/Corner';
+import { useResizeCorner } from './hooks/useResizeCorner';
 Channel.init();
 
 function App() {
@@ -75,6 +77,10 @@ function App() {
       },
     });
   };
+
+  const cornerRef = useRef<HTMLDivElement>(null);
+
+  const cornerHandlers = useResizeCorner();
 
   if (!isLoaded) {
     return <div>loading...</div>;
@@ -160,6 +166,7 @@ function App() {
           <code>{jsonStr}</code>
         </pre>
       </section>
+      <Corner ref={cornerRef} {...cornerHandlers} />
     </div>
   );
 }

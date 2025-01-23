@@ -1,4 +1,5 @@
 const EventType = {
+  ResizeWindow: 'ResizeWindow',
   RequestToJSON: 'RequestToJSON',
   SuccessToJSON: 'SuccessToJSON',
   RequestLoadVariableData: 'RequestLoadVariableData',
