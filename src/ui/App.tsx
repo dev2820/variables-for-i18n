@@ -133,6 +133,18 @@ function App() {
     setIsEditing(false);
   };
 
+  const handleClickDeleteCell = (e: MouseEvent<HTMLButtonElement>) => {
+    Channel.sendMessage(EventType.DeleteVariable, {
+      key: e.currentTarget.dataset['id'],
+    });
+  };
+
+  const handleClickCreateCell = (e: MouseEvent<HTMLButtonElement>) => {
+    Channel.sendMessage(EventType.DeleteVariable, {
+      key: e.currentTarget.dataset['id'],
+    });
+  };
+
   useEffect(() => {
     if (isEditing) {
       inputRef.current?.focus();
@@ -166,6 +178,7 @@ function App() {
             {modes.map((m) => (
               <Table.Header key={m.name}>{m.name}</Table.Header>
             ))}
+            <Table.Header>Delete</Table.Header>
           </Table.Row>
         </Table.Head>
         <Table.Body>
@@ -204,10 +217,22 @@ function App() {
                     }
                   </Table.Cell>
                 ))}
+                <Table.Cell>
+                  {
+                    <button
+                      className={styles.CellDeleteBtn}
+                      onClick={handleClickDeleteCell}
+                      data-id={r.id}
+                    >
+                      삭제
+                    </button>
+                  }
+                </Table.Cell>
               </Table.Row>
             ))}
         </Table.Body>
       </Table.Root>
+      <section></section>
       <section>
         <h3>Export Result</h3>
         <pre className={styles.CodeBlock}>
