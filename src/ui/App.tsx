@@ -112,7 +112,6 @@ function App() {
     if (!inputRef.current) {
       return;
     }
-    console.log('??');
 
     if (cellEditingInfo.type === 'key') {
       const { value, id } = cellEditingInfo;
