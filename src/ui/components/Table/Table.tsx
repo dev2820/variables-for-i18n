@@ -38,6 +38,12 @@ export const TableBody = (props: TableBodyProps) => {
   return <tbody className={cn(styles.TableBody, className)} {...rest} />;
 };
 
+type TableFootProps = ComponentProps<'tfoot'>;
+export const TableFoot = (props: TableFootProps) => {
+  const { className, ...rest } = props;
+  return <tfoot className={cn(styles.TableFoot, className)} {...rest} />;
+};
+
 export const Table = {
   Root: TableRoot,
   Head: TableHead,
@@ -45,4 +51,5 @@ export const Table = {
   Row: TableRow,
   Cell: TableCell,
   Body: TableBody,
+  Foot: TableFoot,
 };
