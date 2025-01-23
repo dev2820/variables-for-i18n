@@ -63,6 +63,21 @@ class VariableCollectionSchema {
       return false;
     }
   }
+  async updateVariableNameById(
+    variableKey: Variable['key'],
+    newName: Variable['name'],
+  ) {
+    try {
+      const variable = await figma.variables.getVariableByIdAsync(variableKey);
+      if (!variable) {
+        throw Error('variable not found');
+      }
+      variable.name = newName;
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
   async createVariable(name: string, valuesByMode: Record<string, string>) {
     try {
       const collection = await this.getCollection();

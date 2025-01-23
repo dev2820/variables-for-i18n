@@ -5,6 +5,7 @@ const EventType = {
   RequestLoadVariableData: 'RequestLoadVariableData',
   UpdateVariableData: 'UpdateVariableData',
   ChangeVariableValue: 'ChangeVariableValue',
+  ChangeVariableName: 'ChangeVariableName',
   CreateVariable: 'CreateVariable',
   DeleteVariable: 'DeleteVariable',
   LoadedLocalVariableTable: 'LoadedLocalVariableTable',

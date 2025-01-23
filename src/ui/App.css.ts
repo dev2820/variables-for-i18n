@@ -9,6 +9,11 @@ const styles = {
   VariablesTable: style({
     width: '100%',
   }),
+  CellEditor: style({
+    position: 'absolute',
+    left: '-100%',
+    top: '-100%',
+  }),
 };
 
 export default styles;

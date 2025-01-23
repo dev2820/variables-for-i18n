@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type FocusEvent,
+  type KeyboardEvent,
+} from 'react';
 import { Button } from './components/Button/Button';
 import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
@@ -82,6 +89,101 @@ function App() {
 
   const cornerHandlers = useResizeCorner();
 
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [cellEditingInfo, setCellEditingInfo] = useState<
+    | {
+        type: 'value';
+        id: string;
+        value: string;
+        mode: string;
+      }
+    | {
+        type: 'key';
+        id: string;
+        value: string;
+      }
+  >({ type: 'key', id: '', value: '' });
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleDbClickCell = (e: MouseEvent<HTMLElement>) => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    const $target = e.currentTarget;
+    const value = $target.textContent;
+    const typeOfCell = $target.dataset['type'];
+    const idOfCell = $target.dataset['id'];
+
+    const rect = $target.getBoundingClientRect();
+    inputRef.current.value = value;
+    inputRef.current.style.left = `${rect.left}px`;
+    inputRef.current.style.top = `${rect.top}px`;
+    inputRef.current.style.width = `${rect.width}px`;
+    inputRef.current.style.height = `${rect.height}px`;
+
+    if (typeOfCell === 'value') {
+      const mode = $target.dataset['mode'];
+      setCellEditingInfo({
+        type: 'value',
+        id: idOfCell,
+        value,
+        mode,
+      });
+    }
+    if (typeOfCell === 'key') {
+      setCellEditingInfo({
+        type: 'key',
+        id: idOfCell,
+        value,
+      });
+    }
+    setIsEditing(true);
+  };
+
+  const handleKeyDownCell = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setCellEditingInfo({
+        ...cellEditingInfo,
+        value: e.currentTarget.value,
+      });
+      setIsEditing(false);
+    }
+  };
+  const handleBlurCell = (e: FocusEvent<HTMLInputElement>) => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    if (cellEditingInfo.type === 'key') {
+      const { value, id } = cellEditingInfo;
+      Channel.sendMessage(EventType.ChangeVariableName, {
+        name: value,
+        key: id,
+      });
+    } else if (cellEditingInfo.type === 'value') {
+      const { value, id, mode } = cellEditingInfo;
+      Channel.sendMessage(EventType.ChangeVariableValue, {
+        value: value,
+        key: id,
+        mode: mode,
+      });
+    }
+    inputRef.current.value = '';
+    inputRef.current.style.left = `-100%`;
+    inputRef.current.style.top = `-100%`;
+
+    setIsEditing(false);
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    } else {
+      inputRef.current?.blur();
+    }
+  }, [isEditing]);
+
   if (!isLoaded) {
     return <div>loading...</div>;
   }
@@ -152,9 +254,28 @@ function App() {
             })
             .map((r) => (
               <Table.Row key={r.id}>
-                <Table.Cell>{r.name}</Table.Cell>
+                <Table.Cell>
+                  <div
+                    onDoubleClick={handleDbClickCell}
+                    data-type="key"
+                    data-id={r.id}
+                  >
+                    {r.name}
+                  </div>
+                </Table.Cell>
                 {Object.entries(r.valuesByMode).map((entry) => (
-                  <Table.Cell key={entry[0]}>{entry[1]}</Table.Cell>
+                  <Table.Cell key={entry[0]}>
+                    {
+                      <div
+                        onDoubleClick={handleDbClickCell}
+                        data-type="value"
+                        data-mode={entry[0]}
+                        data-id={r.id}
+                      >
+                        {entry[1]}
+                      </div>
+                    }
+                  </Table.Cell>
                 ))}
               </Table.Row>
             ))}
@@ -166,6 +287,12 @@ function App() {
           <code>{jsonStr}</code>
         </pre>
       </section>
+      <input
+        ref={inputRef}
+        className={styles.CellEditor}
+        onKeyDown={handleKeyDownCell}
+        onBlur={handleBlurCell}
+      />
       <Corner ref={cornerRef} {...cornerHandlers} />
     </div>
   );
