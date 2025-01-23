@@ -233,7 +233,7 @@ function App() {
                       onClick={handleClickDeleteCell}
                       data-id={r.id}
                     >
-                      삭제
+                      Del
                     </button>
                   }
                 </Table.Cell>
@@ -243,7 +243,7 @@ function App() {
       </Table.Root>
       <section>
         <label>
-          새 키
+          New Key
           <input value={keyStr} onChange={(e) => setKeyStr(e.target.value)} />
         </label>
         {modes.map((mode, i) => (
