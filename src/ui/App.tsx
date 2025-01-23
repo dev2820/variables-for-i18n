@@ -259,7 +259,7 @@ function App() {
             />
           </label>
         ))}
-        <button onClick={handleClickCreateCell}>생성</button>
+        <button onClick={handleClickCreateCell}>Create</button>
       </section>
       <section>
         <h3>Export Result</h3>
