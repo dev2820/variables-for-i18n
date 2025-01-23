@@ -170,11 +170,6 @@ function App() {
   }
   return (
     <div className={themeClass}>
-      <menu>
-        <li>
-          <Button onClick={handleClickExtractEn}>Extract En</Button>
-        </li>
-      </menu>
       <fieldset>
         <label htmlFor="search">Search</label>
         <input
@@ -269,6 +264,11 @@ function App() {
       </section>
       <section>
         <h3>Export Result</h3>
+        <menu>
+          <li>
+            <Button onClick={handleClickExtractEn}>Extract En</Button>
+          </li>
+        </menu>
         <pre className={styles.CodeBlock}>
           <code>{jsonStr}</code>
         </pre>
