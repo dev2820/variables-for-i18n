@@ -20,8 +20,9 @@ Channel.init();
 function App() {
   const [jsonStr, setJsonStr] = useState<string>('');
   const [searchStr, setSearchStr] = useState<string>('');
-
   const { isLoaded, modes, vars } = useI18nVariables();
+  const [keyStr, setKeyStr] = useState<string>('');
+  const [valueStrObj, setValueStrObj] = useState<Record<string, string>>({});
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
@@ -139,10 +140,20 @@ function App() {
     });
   };
 
-  const handleClickCreateCell = (e: MouseEvent<HTMLButtonElement>) => {
-    Channel.sendMessage(EventType.DeleteVariable, {
-      key: e.currentTarget.dataset['id'],
+  const handleClickCreateCell = () => {
+    if (
+      Object.values(valueStrObj).some(
+        (v) => typeof v !== 'string' || v.length <= 0,
+      )
+    ) {
+      parent.alert('Please fill all field');
+    }
+    Channel.sendMessage(EventType.CreateVariable, {
+      name: keyStr,
+      valuesByMode: valueStrObj,
     });
+    setKeyStr('');
+    setValueStrObj({});
   };
 
   useEffect(() => {
@@ -232,7 +243,27 @@ function App() {
             ))}
         </Table.Body>
       </Table.Root>
-      <section></section>
+      <section>
+        <label>
+          새 키
+          <input value={keyStr} onChange={(e) => setKeyStr(e.target.value)} />
+        </label>
+        {modes.map((mode, i) => (
+          <label key={mode.modeId}>
+            {mode.name}
+            <input
+              value={valueStrObj[mode.modeId] ?? ''}
+              onChange={(e) =>
+                setValueStrObj({
+                  ...valueStrObj,
+                  [mode.modeId]: e.target.value,
+                })
+              }
+            />
+          </label>
+        ))}
+        <button onClick={handleClickCreateCell}>생성</button>
+      </section>
       <section>
         <h3>Export Result</h3>
         <pre className={styles.CodeBlock}>
