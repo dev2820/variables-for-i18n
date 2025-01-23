@@ -19,9 +19,6 @@ Channel.init();
 
 function App() {
   const [jsonStr, setJsonStr] = useState<string>('');
-  const [keyStr, setKeyStr] = useState<string>('');
-  const [modeStr, setModeStr] = useState<string>('');
-  const [valueStr, setValueStr] = useState<string>('');
   const [searchStr, setSearchStr] = useState<string>('');
 
   const { isLoaded, modes, vars } = useI18nVariables();
@@ -41,48 +38,8 @@ function App() {
     };
   }, []);
 
-  const handleClickCopyEn = () => {
+  const handleClickExtractEn = () => {
     Channel.sendMessage(EventType.RequestToJSON, '');
-  };
-
-  const handleChangeKeyValue = () => {
-    /**
-     * modify request
-     */
-    const targetCell = vars.find((r) => r.name === keyStr);
-    const targetMode = modes.find((h) => h.name === modeStr);
-    if (targetMode && targetCell) {
-      Channel.sendMessage(EventType.ChangeVariableValue, {
-        key: targetCell.id,
-        mode: targetMode.modeId,
-        value: valueStr,
-      });
-    } else {
-      alert('modeId not exist');
-    }
-  };
-
-  const handleDeleteKeyValue = () => {
-    /**
-     * delete request
-     */
-    const targetCell = vars.find((r) => r.name === keyStr);
-    if (targetCell) {
-      Channel.sendMessage(EventType.DeleteVariable, {
-        key: targetCell.id,
-      });
-    }
-  };
-  const handleCreateKeyValue = () => {
-    /**
-     * create request
-     */
-    Channel.sendMessage(EventType.CreateVariable, {
-      name: keyStr,
-      valuesByMode: {
-        [modes[0].modeId]: valueStr,
-      },
-    });
   };
 
   const cornerRef = useRef<HTMLDivElement>(null);
@@ -191,7 +148,7 @@ function App() {
     <div className={themeClass}>
       <menu>
         <li>
-          <Button onClick={handleClickCopyEn}>Extract En</Button>
+          <Button onClick={handleClickExtractEn}>Extract En</Button>
         </li>
       </menu>
       <fieldset>
