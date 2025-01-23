@@ -4,7 +4,8 @@ import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
 import { useI18nVariables } from './hooks/useI18nVariables';
-
+import { Table } from './components/Table/Table';
+import { themeClass } from './theme.css';
 Channel.init();
 
 function App() {
@@ -79,7 +80,7 @@ function App() {
     return <div>loading...</div>;
   }
   return (
-    <div>
+    <div className={themeClass}>
       <menu>
         <li>
           <Button onClick={handleClickCopyEn}>Extract En</Button>
@@ -123,16 +124,16 @@ function App() {
           onChange={(e) => setSearchStr(e.target.value)}
         />
       </fieldset>
-      <table>
-        <thead>
-          <tr>
-            <th>Key</th>
+      <Table.Root className={styles.VariablesTable}>
+        <Table.Head>
+          <Table.Row>
+            <Table.Header>Key</Table.Header>
             {modes.map((m) => (
-              <th key={m.name}>{m.name}</th>
+              <Table.Header key={m.name}>{m.name}</Table.Header>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </Table.Row>
+        </Table.Head>
+        <Table.Body>
           {vars
             .filter((r) => {
               if (searchStr.length > 0) {
@@ -144,15 +145,15 @@ function App() {
               return true;
             })
             .map((r) => (
-              <tr key={r.id}>
-                <td>{r.name}</td>
+              <Table.Row key={r.id}>
+                <Table.Cell>{r.name}</Table.Cell>
                 {Object.entries(r.valuesByMode).map((entry) => (
-                  <td key={entry[0]}>{entry[1]}</td>
+                  <Table.Cell key={entry[0]}>{entry[1]}</Table.Cell>
                 ))}
-              </tr>
+              </Table.Row>
             ))}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table.Root>
       <section>
         <h3>Export Result</h3>
         <pre className={styles.CodeBlock}>

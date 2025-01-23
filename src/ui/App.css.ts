@@ -6,6 +6,9 @@ const styles = {
     background: '#cccccc',
     color: '#333333',
   }),
+  VariablesTable: style({
+    width: '100%',
+  }),
 };
 
 export default styles;

@@ -49,7 +49,12 @@ module.exports = {
       },
     ],
   },
-  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
+  resolve: {
+    alias: {
+      '@': paths.appPath + '/src',
+    },
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+  },
   output: {
     filename: '[name].js',
     path: paths.appBuild,
