@@ -12,7 +12,7 @@ function App() {
   const [keyStr, setKeyStr] = useState<string>('');
   const [modeStr, setModeStr] = useState<string>('');
   const [valueStr, setValueStr] = useState<string>('');
-  const [nameStr, setNameStr] = useState<string>('');
+  const [searchStr, setSearchStr] = useState<string>('');
 
   const { isLoaded, modes, vars } = useI18nVariables();
   // util과 hook으로 분리 필요
@@ -116,6 +116,12 @@ function App() {
         <button type="button" onClick={handleDeleteKeyValue}>
           delete
         </button>
+        <label htmlFor="search">Search</label>
+        <input
+          id="value"
+          type="text"
+          onChange={(e) => setSearchStr(e.target.value)}
+        />
       </fieldset>
       <table>
         <thead>
@@ -127,14 +133,24 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {vars.map((r) => (
-            <tr key={r.id}>
-              <td>{r.name}</td>
-              {Object.entries(r.valuesByMode).map((entry) => (
-                <td key={entry[0]}>{entry[1]}</td>
-              ))}
-            </tr>
-          ))}
+          {vars
+            .filter((r) => {
+              if (searchStr.length > 0) {
+                if (r.name.indexOf(searchStr) >= 0) return true;
+                return Object.values(r.valuesByMode).some(
+                  (v) => v.toString().indexOf(searchStr) >= 0,
+                );
+              }
+              return true;
+            })
+            .map((r) => (
+              <tr key={r.id}>
+                <td>{r.name}</td>
+                {Object.entries(r.valuesByMode).map((entry) => (
+                  <td key={entry[0]}>{entry[1]}</td>
+                ))}
+              </tr>
+            ))}
         </tbody>
       </table>
       <section>
