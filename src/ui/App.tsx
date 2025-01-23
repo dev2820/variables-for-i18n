@@ -195,36 +195,6 @@ function App() {
         </li>
       </menu>
       <fieldset>
-        <label htmlFor="keyStr">Key</label>
-        <input
-          id="keyStr"
-          type="text"
-          onChange={(e) => setKeyStr(e.target.value)}
-        />
-        <br />
-        <label htmlFor="mode">Mode</label>
-        <input
-          id="mode"
-          type="text"
-          onChange={(e) => setModeStr(e.target.value)}
-        />
-        <br />
-        <label htmlFor="value">Value</label>
-        <input
-          id="value"
-          type="text"
-          onChange={(e) => setValueStr(e.target.value)}
-        />
-        <br />
-        <button type="button" onClick={handleChangeKeyValue}>
-          change
-        </button>
-        <button type="button" onClick={handleCreateKeyValue}>
-          create
-        </button>
-        <button type="button" onClick={handleDeleteKeyValue}>
-          delete
-        </button>
         <label htmlFor="search">Search</label>
         <input
           id="value"
