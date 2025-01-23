@@ -5,6 +5,9 @@ const common = style({
   borderWidth: '1px',
   borderStyle: 'solid',
   borderColor: theme.color.neutral[200],
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
 });
 export default {
   TableRoot: style([

@@ -9,6 +9,7 @@ const styles = {
   }),
   VariablesTable: style({
     width: '100%',
+    tableLayout: 'fixed',
   }),
   CellEditor: style({
     position: 'absolute',
@@ -18,12 +19,28 @@ const styles = {
   CellDeleteBtn: style({
     border: 'none',
     textDecoration: 'underline',
-    width: '100%',
     height: '100%',
     background: 'transparent',
+    cursor: 'pointer',
+    transitionProperty: 'color',
+    transitionDuration: '200ms',
     ':hover': {
-      background: theme.color.danger[200],
+      color: theme.color.danger[500],
     },
+  }),
+  CellDeleteHeader: style({
+    width: '80px',
+    maxWidth: '80px',
+    minWidth: '80px',
+  }),
+  CellKeyHeader: style({
+    width: '240px',
+    maxWidth: '240px',
+    minWidth: '240px',
+  }),
+  CellKey: style({
+    width: '100%',
+    maxWidth: '300px',
   }),
 };
 

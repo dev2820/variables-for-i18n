@@ -112,6 +112,7 @@ function App() {
     if (!inputRef.current) {
       return;
     }
+    console.log('??');
 
     if (cellEditingInfo.type === 'key') {
       const { value, id } = cellEditingInfo;
@@ -185,11 +186,13 @@ function App() {
       <Table.Root className={styles.VariablesTable}>
         <Table.Head>
           <Table.Row>
-            <Table.Header>Key</Table.Header>
+            <Table.Header className={styles.CellKeyHeader}>Key</Table.Header>
             {modes.map((m) => (
               <Table.Header key={m.name}>{m.name}</Table.Header>
             ))}
-            <Table.Header>Delete</Table.Header>
+            <Table.Header className={styles.CellDeleteHeader}>
+              Delete
+            </Table.Header>
           </Table.Row>
         </Table.Head>
         <Table.Body>
