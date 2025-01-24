@@ -165,7 +165,7 @@ function App() {
   }, [isEditing]);
 
   if (!isLoaded) {
-    return <div>loading...</div>;
+    return <div>Please create a variable collection called 'i18n' first</div>;
   }
   return (
     <div className={themeClass}>
