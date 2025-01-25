@@ -1,12 +1,12 @@
 {
   "name": "Variables for i18n",
-  "id": "1460236921481289701",
   "api": "1.0.0",
+  "id": "1465032483656605623",
   "main": "dist/plugin.js",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
-  "editorType": ["figma"],
+  "editorType": ["figma", "dev"],
   "ui": "dist/ui.html",
   "networkAccess": {
     "allowedDomains": ["none"]
