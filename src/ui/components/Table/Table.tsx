@@ -23,7 +23,7 @@ export const TableRow = (props: TableRowProps) => {
 type TableCellProps = ComponentProps<'td'>;
 export const TableCell = (props: TableCellProps) => {
   const { className, ...rest } = props;
-  return <td className={cn(styles.TableRow, className)} {...rest} />;
+  return <td className={cn(styles.TableCell, className)} {...rest} />;
 };
 
 type TableHeaderProps = ComponentProps<'th'>;

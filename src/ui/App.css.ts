@@ -7,11 +7,27 @@ const styles = {
     background: '#cccccc',
     color: '#333333',
   }),
+  VariablesContainer: style({
+    width: '100%',
+  }),
   VariablesTable: style({
     width: '100%',
     tableLayout: 'fixed',
     borderRadius: theme.radii.md,
     overflow: 'hidden',
+  }),
+  VariablesModeColumn: style({
+    flex: 1,
+  }),
+  VariablesKeyColumn: style({
+    width: '240px',
+    maxWidth: '240px',
+    minWidth: '240px',
+  }),
+  VariablesDelColumn: style({
+    width: '80px',
+    maxWidth: '80px',
+    minWidth: '80px',
   }),
   CellEditor: style({
     position: 'absolute',
@@ -29,16 +45,6 @@ const styles = {
     ':hover': {
       color: theme.color.danger[500],
     },
-  }),
-  CellDeleteHeader: style({
-    width: '80px',
-    maxWidth: '80px',
-    minWidth: '80px',
-  }),
-  CellKeyHeader: style({
-    width: '240px',
-    maxWidth: '240px',
-    minWidth: '240px',
   }),
   CellKey: style({
     width: '100%',

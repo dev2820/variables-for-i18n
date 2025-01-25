@@ -16,6 +16,8 @@ import { themeClass } from './theme.css';
 import { Corner } from './components/Corner/Corner';
 import { useResizeCorner } from './hooks/useResizeCorner';
 import { SearchInput } from './components/Input/SearchInput';
+import { cn } from './utils/cn';
+import { fullStyle } from './atom.css';
 
 Channel.init();
 
@@ -129,73 +131,91 @@ function App() {
         className={styles.SearchInput}
         onChange={(e) => setSearchStr(e.target.value)}
       />
-      <Table.Root className={styles.VariablesTable}>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header className={styles.CellKeyHeader}>Key</Table.Header>
-            {modes.map((m) => (
-              <Table.Header key={m.name}>{m.name}</Table.Header>
-            ))}
-            <Table.Header className={styles.CellDeleteHeader}>
-              Delete
-            </Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          {vars
-            .filter((r) => {
-              if (searchStr.length > 0) {
-                if (r.name.indexOf(searchStr) >= 0) return true;
-                return Object.values(r.valuesByMode).some(
-                  (v) => v.toString().indexOf(searchStr) >= 0,
-                );
-              }
-              return true;
-            })
-            .map((r) => (
-              <Table.Row key={r.id}>
-                <Table.Cell>
-                  <div onClick={handleClickCell} data-type="key" data-id={r.id}>
-                    {r.name}
-                  </div>
-                </Table.Cell>
-                {Object.entries(r.valuesByMode).map((entry) => (
-                  <Table.Cell key={entry[0]}>
-                    {
-                      <div
-                        onClick={handleClickCell}
-                        data-type="value"
-                        data-mode={entry[0]}
-                        data-id={r.id}
-                      >
-                        {entry[1]}
-                      </div>
-                    }
-                  </Table.Cell>
-                ))}
-                <Table.Cell>
-                  {
-                    <button
-                      className={styles.CellDeleteBtn}
-                      onClick={handleClickDeleteCell}
+      <div className={styles.VariablesContainer}>
+        <Table.Root className={styles.VariablesTable}>
+          <Table.Head>
+            <Table.Row>
+              <Table.Header className={cn(styles.VariablesKeyColumn)}>
+                Key
+              </Table.Header>
+              {modes.map((m) => (
+                <Table.Header
+                  key={m.name}
+                  className={styles.VariablesModeColumn}
+                >
+                  {m.name}
+                </Table.Header>
+              ))}
+              <Table.Header className={styles.VariablesDelColumn}>
+                Delete
+              </Table.Header>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {vars
+              .filter((r) => {
+                if (searchStr.length > 0) {
+                  if (r.name.indexOf(searchStr) >= 0) return true;
+                  return Object.values(r.valuesByMode).some(
+                    (v) => v.toString().indexOf(searchStr) >= 0,
+                  );
+                }
+                return true;
+              })
+              .map((r) => (
+                <Table.Row key={r.id}>
+                  <Table.Cell className={styles.VariablesKeyColumn}>
+                    <div
+                      onClick={handleClickCell}
+                      data-type="key"
                       data-id={r.id}
                     >
-                      Del
-                    </button>
-                  }
-                </Table.Cell>
-              </Table.Row>
-            ))}
-        </Table.Body>
-        <Table.Foot>
-          <Table.Row>
-            <Table.Cell colSpan={modes.length + 2}>
-              <button onClick={handleClickCreateDefaultI18n}>+ Add i18n</button>
-            </Table.Cell>
-          </Table.Row>
-        </Table.Foot>
-      </Table.Root>
-
+                      {r.name}
+                    </div>
+                  </Table.Cell>
+                  {Object.entries(r.valuesByMode).map((entry) => (
+                    <Table.Cell
+                      key={entry[0]}
+                      className={styles.VariablesModeColumn}
+                    >
+                      {
+                        <div
+                          onClick={handleClickCell}
+                          data-type="value"
+                          data-mode={entry[0]}
+                          data-id={r.id}
+                          className={fullStyle}
+                        >
+                          {entry[1]}
+                        </div>
+                      }
+                    </Table.Cell>
+                  ))}
+                  <Table.Cell className={styles.VariablesDelColumn}>
+                    {
+                      <button
+                        className={styles.CellDeleteBtn}
+                        onClick={handleClickDeleteCell}
+                        data-id={r.id}
+                      >
+                        Del
+                      </button>
+                    }
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+          </Table.Body>
+          <Table.Foot>
+            <Table.Row>
+              <Table.Cell colSpan={modes.length + 2}>
+                <button onClick={handleClickCreateDefaultI18n}>
+                  + Add i18n
+                </button>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Foot>
+        </Table.Root>
+      </div>
       <section>
         <h3>Export Result</h3>
         <menu className={styles.ExtractMenu}>
