@@ -46,23 +46,8 @@ function App() {
 
   const cornerHandlers = useResizeCorner();
 
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [cellEditingInfo, setCellEditingInfo] = useState<
-    | {
-        type: 'value';
-        id: string;
-        value: string;
-        mode: string;
-      }
-    | {
-        type: 'key';
-        id: string;
-        value: string;
-      }
-  >({ type: 'key', id: '', value: '' });
-
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleDbClickCell = (e: MouseEvent<HTMLElement>) => {
+  const handleClickCell = (e: MouseEvent<HTMLElement>) => {
     if (!inputRef.current) {
       return;
     }
@@ -78,48 +63,38 @@ function App() {
     inputRef.current.style.top = `${rect.top}px`;
     inputRef.current.style.width = `${rect.width}px`;
     inputRef.current.style.height = `${rect.height}px`;
-
+    inputRef.current.dataset['type'] = typeOfCell;
+    inputRef.current.dataset['id'] = idOfCell;
     if (typeOfCell === 'value') {
       const mode = $target.dataset['mode'];
-      setCellEditingInfo({
-        type: 'value',
-        id: idOfCell,
-        value,
-        mode,
-      });
+      inputRef.current.dataset['mode'] = mode;
     }
-    if (typeOfCell === 'key') {
-      setCellEditingInfo({
-        type: 'key',
-        id: idOfCell,
-        value,
-      });
-    }
-    setIsEditing(true);
   };
 
   const handleKeyDownCell = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === 'Escape') {
-      setCellEditingInfo({
-        ...cellEditingInfo,
-        value: e.currentTarget.value,
-      });
-      setIsEditing(false);
+      e.currentTarget.blur();
     }
   };
   const handleBlurCell = (e: FocusEvent<HTMLInputElement>) => {
+    const $target = e.currentTarget;
     if (!inputRef.current) {
       return;
     }
 
-    if (cellEditingInfo.type === 'key') {
-      const { value, id } = cellEditingInfo;
+    if ($target.dataset['type'] === 'key') {
+      const value = $target.value;
+      const id = $target.dataset['id'];
+
       Channel.sendMessage(EventType.ChangeVariableName, {
         name: value,
         key: id,
       });
-    } else if (cellEditingInfo.type === 'value') {
-      const { value, id, mode } = cellEditingInfo;
+    } else if ($target.dataset['type'] === 'value') {
+      const value = $target.value;
+      const id = $target.dataset['id'];
+      const mode = $target.dataset['mode'];
+
       Channel.sendMessage(EventType.ChangeVariableValue, {
         value: value,
         key: id,
@@ -129,8 +104,6 @@ function App() {
     inputRef.current.value = '';
     inputRef.current.style.left = `-100%`;
     inputRef.current.style.top = `-100%`;
-
-    setIsEditing(false);
   };
 
   const handleClickDeleteCell = (e: MouseEvent<HTMLButtonElement>) => {
@@ -142,14 +115,6 @@ function App() {
   const handleClickCreateDefaultI18n = () => {
     Channel.sendMessage(EventType.CreateDefaultVariable);
   };
-
-  useEffect(() => {
-    if (isEditing) {
-      inputRef.current?.focus();
-    } else {
-      inputRef.current?.blur();
-    }
-  }, [isEditing]);
 
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
@@ -190,11 +155,7 @@ function App() {
             .map((r) => (
               <Table.Row key={r.id}>
                 <Table.Cell>
-                  <div
-                    onDoubleClick={handleDbClickCell}
-                    data-type="key"
-                    data-id={r.id}
-                  >
+                  <div onClick={handleClickCell} data-type="key" data-id={r.id}>
                     {r.name}
                   </div>
                 </Table.Cell>
@@ -202,7 +163,7 @@ function App() {
                   <Table.Cell key={entry[0]}>
                     {
                       <div
-                        onDoubleClick={handleDbClickCell}
+                        onClick={handleClickCell}
                         data-type="value"
                         data-mode={entry[0]}
                         data-id={r.id}
