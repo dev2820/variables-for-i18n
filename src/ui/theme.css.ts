@@ -45,6 +45,29 @@ const [themeClass, theme] = createTheme({
   font: {
     body: 'Inter',
   },
+  fontSize: {
+    '6xl': '3.75rem',
+    '5xl': '3rem',
+    '4xl': '2.25rem',
+    '3xl': '1.875rem',
+    '2xl': '1.5rem',
+    xl: '1.25rem',
+    lg: '1.125rem',
+    md: '1rem',
+    sm: '0.875rem',
+    xs: '0.75rem',
+  },
+  radii: {
+    none: '0px',
+    xs: '0.125rem',
+    sm: '0.25rem',
+    md: '0.35rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    '2xl': '1rem',
+    '3xl': '1.5rem',
+    full: '9999px',
+  },
 });
 
 export { themeClass, theme };

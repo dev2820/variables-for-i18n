@@ -10,6 +10,8 @@ const styles = {
   VariablesTable: style({
     width: '100%',
     tableLayout: 'fixed',
+    borderRadius: theme.radii.md,
+    overflow: 'hidden',
   }),
   CellEditor: style({
     position: 'absolute',
@@ -41,6 +43,13 @@ const styles = {
   CellKey: style({
     width: '100%',
     maxWidth: '300px',
+  }),
+  ExtractMenu: style({
+    paddingLeft: 0,
+    listStyleType: 'none',
+  }),
+  SearchInput: style({
+    marginBottom: '0.5rem',
   }),
 };
 

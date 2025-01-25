@@ -15,6 +15,7 @@ import { Table } from './components/Table/Table';
 import { themeClass } from './theme.css';
 import { Corner } from './components/Corner/Corner';
 import { useResizeCorner } from './hooks/useResizeCorner';
+import { SearchInput } from './components/Input/SearchInput';
 
 Channel.init();
 
@@ -122,14 +123,12 @@ function App() {
   }
   return (
     <div className={themeClass}>
-      <fieldset>
-        <label htmlFor="search">Search</label>
-        <input
-          id="value"
-          type="text"
-          onChange={(e) => setSearchStr(e.target.value)}
-        />
-      </fieldset>
+      <SearchInput
+        id="search"
+        placeholder="search"
+        className={styles.SearchInput}
+        onChange={(e) => setSearchStr(e.target.value)}
+      />
       <Table.Root className={styles.VariablesTable}>
         <Table.Head>
           <Table.Row>
@@ -199,7 +198,7 @@ function App() {
 
       <section>
         <h3>Export Result</h3>
-        <menu>
+        <menu className={styles.ExtractMenu}>
           {modes.map((mode) => (
             <li key={mode.modeId}>
               <Button onClick={handleClickExtractEn} data-mode={mode.modeId}>
