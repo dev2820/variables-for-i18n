@@ -1,10 +1,17 @@
 import { cn } from '@/ui/utils/cn';
-import React, { type ComponentProps } from 'react';
-import style from './SearchInput.css';
+import React, { type ComponentProps, type MouseEvent } from 'react';
+import styles from './SearchInput.css';
+import { SearchIcon } from 'lucide-react';
 
 export type SearchInputProps = Omit<ComponentProps<'input'>, 'type'>;
 
 export function SearchInput(props: SearchInputProps) {
   const { className, ...rest } = props;
-  return <input type="search" className={cn(style, className)} {...rest} />;
+
+  return (
+    <div className={styles.root}>
+      <input type="search" className={cn(styles.input, className)} {...rest} />
+      <SearchIcon className={styles.icon} size={20} />
+    </div>
+  );
 }
