@@ -69,6 +69,8 @@ function App() {
     inputRef.current.style.height = `${rect.height}px`;
     inputRef.current.dataset['type'] = typeOfCell;
     inputRef.current.dataset['id'] = idOfCell;
+    inputRef.current.dataset['hidden'] = 'false';
+
     if (typeOfCell === 'value') {
       const mode = $target.dataset['mode'];
       inputRef.current.dataset['mode'] = mode;
@@ -108,6 +110,7 @@ function App() {
     inputRef.current.value = '';
     inputRef.current.style.left = `-100%`;
     inputRef.current.style.top = `-100%`;
+    inputRef.current.dataset['hidden'] = 'true';
   };
 
   const handleClickDeleteCell = (e: MouseEvent<HTMLButtonElement>) => {
@@ -120,11 +123,24 @@ function App() {
     Channel.sendMessage(EventType.CreateDefaultVariable);
   };
 
+  const handleClickOutside = (e: MouseEvent<HTMLElement>) => {
+    if (inputRef.current) {
+      if (inputRef.current.dataset['hidden'] !== 'true') {
+        if (e.target !== inputRef.current) {
+          inputRef.current.dataset['hidden'] = 'true';
+          inputRef.current.value = '';
+          inputRef.current.style.left = `-100%`;
+          inputRef.current.style.top = `-100%`;
+        }
+      }
+    }
+  };
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
   }
+
   return (
-    <div className={themeClass}>
+    <div id="app" className={themeClass} onClickCapture={handleClickOutside}>
       <SearchInput
         id="search"
         placeholder="search"
@@ -236,6 +252,7 @@ function App() {
         className={styles.CellEditor}
         onKeyDown={handleKeyDownCell}
         onBlur={handleBlurCell}
+        data-hidden="true"
       />
       <Corner ref={cornerRef} {...cornerHandlers} />
     </div>
