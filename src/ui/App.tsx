@@ -38,8 +38,9 @@ function App() {
     };
   }, []);
 
-  const handleClickExtractEn = () => {
-    Channel.sendMessage(EventType.RequestToJSON, '');
+  const handleClickExtractEn = (e: MouseEvent<HTMLButtonElement>) => {
+    const modeId = e.currentTarget.dataset['mode'];
+    Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
   };
 
   const cornerRef = useRef<HTMLDivElement>(null);
@@ -199,9 +200,13 @@ function App() {
       <section>
         <h3>Export Result</h3>
         <menu>
-          <li>
-            <Button onClick={handleClickExtractEn}>Extract En</Button>
-          </li>
+          {modes.map((mode) => (
+            <li key={mode.modeId}>
+              <Button onClick={handleClickExtractEn} data-mode={mode.modeId}>
+                Extract JSON ({mode.name})
+              </Button>
+            </li>
+          ))}
         </menu>
         <pre className={styles.CodeBlock}>
           <code>{jsonStr}</code>

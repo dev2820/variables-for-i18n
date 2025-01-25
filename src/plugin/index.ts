@@ -49,21 +49,20 @@ function setup() {
       });
     }
     if (msg.type === EventType.RequestToJSON) {
-      /**
-       * convert to json
-       */
-      const modes = await i18nCollection.getModes();
+      const { modeId } = msg.payload;
 
       let result = '';
-      for (const mode of modes) {
+      const modes = await i18nCollection.getModes();
+      const mode = modes.find((mode) => mode.modeId === modeId);
+      if (mode) {
         const jsonStr = await i18nCollection.toJsonStrByMode(mode.modeId);
         result += `/* ${mode.name} */` + jsonStr + '\n';
-      }
 
-      figma.ui.postMessage({
-        type: EventType.SuccessToJSON,
-        payload: result,
-      });
+        figma.ui.postMessage({
+          type: EventType.SuccessToJSON,
+          payload: result,
+        });
+      }
     }
     if (msg.type === EventType.ChangeVariableValue) {
       const { key, mode, value } = msg.payload;
