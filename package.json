@@ -1,5 +1,5 @@
 {
-  "name": "i18n-export",
+  "name": "variables-for-i18n",
   "version": "1.0.0",
   "description": "figma plugin",
   "main": "dist/plugin.js",

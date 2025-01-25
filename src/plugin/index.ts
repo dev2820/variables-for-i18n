@@ -107,6 +107,19 @@ function setup() {
         },
       });
     }
+    if (msg.type === EventType.CreateDefaultVariable) {
+      await i18nCollection.createDefaultVariable();
+      const modes = await i18nCollection.getModes();
+      const vars = await i18nCollection.getVariables();
+
+      figma.ui.postMessage({
+        type: EventType.UpdateVariableData,
+        payload: {
+          modes: modes,
+          vars: vars.map(toVariableData),
+        },
+      });
+    }
     if (msg.type === EventType.DeleteVariable) {
       const { key } = msg.payload;
       await i18nCollection.deleteVariableById(key);

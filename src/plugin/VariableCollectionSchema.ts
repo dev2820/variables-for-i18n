@@ -96,6 +96,20 @@ class VariableCollectionSchema {
       return false;
     }
   }
+  async createDefaultVariable() {
+    try {
+      const collection = await this.getCollection();
+      const variables = await this.getVariables();
+      const variableNames = variables.map((v) => v.name);
+      const defaultName = createDefaultName(variableNames, '18n_key');
+      figma.variables.createVariable(defaultName, collection, 'STRING');
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
   async deleteVariableById(variableKey: Variable['key']) {
     try {
       const variable = await figma.variables.getVariableByIdAsync(variableKey);
@@ -125,3 +139,14 @@ ${entries
 }
 
 export default VariableCollectionSchema;
+
+const createDefaultName = (names: string[], defaultName: string) => {
+  let postFix = 1;
+  let name = defaultName;
+  while (names.findIndex((n) => n === name) >= 0) {
+    name = `${defaultName}_${postFix}`;
+    postFix++;
+  }
+
+  return name;
+};

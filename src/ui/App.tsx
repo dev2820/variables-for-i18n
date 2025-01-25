@@ -15,14 +15,13 @@ import { Table } from './components/Table/Table';
 import { themeClass } from './theme.css';
 import { Corner } from './components/Corner/Corner';
 import { useResizeCorner } from './hooks/useResizeCorner';
+
 Channel.init();
 
 function App() {
   const [jsonStr, setJsonStr] = useState<string>('');
   const [searchStr, setSearchStr] = useState<string>('');
   const { isLoaded, modes, vars } = useI18nVariables();
-  const [keyStr, setKeyStr] = useState<string>('');
-  const [valueStrObj, setValueStrObj] = useState<Record<string, string>>({});
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
@@ -140,20 +139,8 @@ function App() {
     });
   };
 
-  const handleClickCreateCell = () => {
-    if (
-      Object.values(valueStrObj).some(
-        (v) => typeof v !== 'string' || v.length <= 0,
-      )
-    ) {
-      parent.alert('Please fill all field');
-    }
-    Channel.sendMessage(EventType.CreateVariable, {
-      name: keyStr,
-      valuesByMode: valueStrObj,
-    });
-    setKeyStr('');
-    setValueStrObj({});
+  const handleClickCreateDefaultI18n = () => {
+    Channel.sendMessage(EventType.CreateDefaultVariable);
   };
 
   useEffect(() => {
@@ -239,28 +226,15 @@ function App() {
               </Table.Row>
             ))}
         </Table.Body>
+        <Table.Foot>
+          <Table.Row>
+            <Table.Cell colSpan={modes.length + 2}>
+              <button onClick={handleClickCreateDefaultI18n}>+ Add i18n</button>
+            </Table.Cell>
+          </Table.Row>
+        </Table.Foot>
       </Table.Root>
-      <section>
-        <label>
-          New Key
-          <input value={keyStr} onChange={(e) => setKeyStr(e.target.value)} />
-        </label>
-        {modes.map((mode, i) => (
-          <label key={mode.modeId}>
-            {mode.name}
-            <input
-              value={valueStrObj[mode.modeId] ?? ''}
-              onChange={(e) =>
-                setValueStrObj({
-                  ...valueStrObj,
-                  [mode.modeId]: e.target.value,
-                })
-              }
-            />
-          </label>
-        ))}
-        <button onClick={handleClickCreateCell}>Create</button>
-      </section>
+
       <section>
         <h3>Export Result</h3>
         <menu>

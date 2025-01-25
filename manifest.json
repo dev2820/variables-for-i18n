@@ -1,5 +1,5 @@
 {
-  "name": "I18n export",
+  "name": "Variables for i18n",
   "id": "1460236921481289701",
   "api": "1.0.0",
   "main": "dist/plugin.js",

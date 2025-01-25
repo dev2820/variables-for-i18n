@@ -7,6 +7,7 @@ const EventType = {
   ChangeVariableValue: 'ChangeVariableValue',
   ChangeVariableName: 'ChangeVariableName',
   CreateVariable: 'CreateVariable',
+  CreateDefaultVariable: 'CreateDefaultVariable',
   DeleteVariable: 'DeleteVariable',
   LoadedLocalVariableTable: 'LoadedLocalVariableTable',
 } as const;
