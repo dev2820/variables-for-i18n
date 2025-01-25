@@ -57,6 +57,22 @@ const styles = {
   SearchInput: style({
     marginBottom: '0.5rem',
   }),
+  AddDefaultI18nBtn: style({
+    width: '100%',
+    height: '40px',
+    textAlign: 'center',
+    border: 'none',
+    background: 'transparent',
+    transitionProperty: 'color',
+    transitionDuration: '300ms',
+    cursor: 'pointer',
+    ':hover': {
+      background: theme.color.blackAlpha.hover,
+    },
+    ':active': {
+      background: theme.color.blackAlpha.active,
+    },
+  }),
 };
 
 export default styles;

@@ -223,8 +223,11 @@ function App() {
           </Table.Body>
           <Table.Foot>
             <Table.Row>
-              <Table.Cell colSpan={modes.length + 2}>
-                <button onClick={handleClickCreateDefaultI18n}>
+              <Table.Cell className={fullStyle}>
+                <button
+                  className={styles.AddDefaultI18nBtn}
+                  onClick={handleClickCreateDefaultI18n}
+                >
                   + Add i18n
                 </button>
               </Table.Cell>

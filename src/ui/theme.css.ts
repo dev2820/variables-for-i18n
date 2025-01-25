@@ -41,6 +41,10 @@ const [themeClass, theme] = createTheme({
       800: 'oklch(0.444 0.177 26.899)',
       900: 'oklch(0.396 0.141 25.723)',
     },
+    blackAlpha: {
+      hover: 'rgba(0,0,0,0.08)',
+      active: 'rgba(0,0,0,0.16)',
+    },
   },
   font: {
     body: 'Inter',
