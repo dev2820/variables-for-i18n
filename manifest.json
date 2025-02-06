@@ -10,5 +10,11 @@
   "ui": "dist/ui.html",
   "networkAccess": {
     "allowedDomains": ["none"]
-  }
+  },
+  "relaunchButtons": [
+    {
+      "command": "open",
+      "name": "Open Developer Tools"
+    }
+  ]
 }
