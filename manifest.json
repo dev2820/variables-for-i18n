@@ -16,5 +16,6 @@
       "command": "open",
       "name": "Open Developer Tools"
     }
-  ]
+  ],
+  "capabilites": ["textreview", "inspect"]
 }
