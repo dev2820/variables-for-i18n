@@ -3,7 +3,6 @@
   "api": "1.0.0",
   "id": "1465032483656605623",
   "main": "dist/plugin.js",
-  "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
   "editorType": ["figma", "dev"],
@@ -17,5 +16,5 @@
       "name": "Open Developer Tools"
     }
   ],
-  "capabilites": ["textreview", "inspect"]
+  "capabilities": ["textreview", "inspect"]
 }
