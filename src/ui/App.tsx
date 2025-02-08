@@ -20,6 +20,7 @@ import { cn } from './utils/cn';
 import { fullStyle } from './atom.css';
 import { Dialog } from './components/Dialog/Dialog';
 import { useDialog } from './hooks/useDialog';
+import { copyContentOfNode } from './utils/copy';
 
 Channel.init();
 
@@ -36,17 +37,6 @@ function App() {
       Channel.onMessage(EventType.SuccessToJSON, async (payload) => {
         const result = payload as string;
         setJsonStr(result);
-
-        setTimeout(() => {
-          const resultNode = document.getElementById('extract-result');
-          const range = new Range();
-          range.setStart(resultNode, 0);
-          range.setEnd(resultNode, resultNode.childNodes.length);
-          document.getSelection().removeAllRanges();
-          document.getSelection().addRange(range);
-          document.execCommand('copy');
-          document.getSelection().removeAllRanges();
-        }, 1000);
       }),
     );
 
@@ -270,10 +260,21 @@ function App() {
         data-hidden="true"
       />
       <Dialog.Root ref={copyJsonDialogRef}>
-        <Dialog.CloseButton onClick={onCloseDialog}>X</Dialog.CloseButton>
-        <pre id="extract-result" className={styles.CodeBlock}>
-          <code>{jsonStr}</code>
-        </pre>
+        <Dialog.Header>
+          <Dialog.CloseButton onClick={onCloseDialog}>X</Dialog.CloseButton>
+          <Dialog.Title>Variables to JSON</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body>
+          <pre id="extract-result" className={styles.CodeBlock}>
+            <code>{jsonStr}</code>
+          </pre>
+        </Dialog.Body>
+        <Dialog.Footer>
+          <button onClick={() => copyContentOfNode('#extract-result')}>
+            Copy
+          </button>
+          <button onClick={onCloseDialog}>Close</button>
+        </Dialog.Footer>
       </Dialog.Root>
       <Corner ref={cornerRef} {...cornerHandlers} />
     </div>

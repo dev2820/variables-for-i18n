@@ -4,6 +4,8 @@ import { theme } from '@/ui/theme.css';
 const styles = {
   CodeBlock: style({
     padding: 10,
+    margin: 0,
+    height: '100%',
     background: '#cccccc',
     color: '#333333',
   }),

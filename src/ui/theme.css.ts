@@ -49,6 +49,13 @@ const [themeClass, theme] = createTheme({
   font: {
     body: 'Inter',
   },
+  fontWeight: {
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  },
   fontSize: {
     '6xl': '3.75rem',
     '5xl': '3rem',

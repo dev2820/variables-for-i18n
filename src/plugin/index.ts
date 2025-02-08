@@ -56,7 +56,7 @@ function setup() {
       const mode = modes.find((mode) => mode.modeId === modeId);
       if (mode) {
         const jsonStr = await i18nCollection.toJsonStrByMode(mode.modeId);
-        result += `/* ${mode.name} */` + jsonStr + '\n';
+        result += jsonStr + '\n';
 
         figma.ui.postMessage({
           type: EventType.SuccessToJSON,
