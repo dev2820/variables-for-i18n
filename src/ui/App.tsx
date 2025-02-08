@@ -146,7 +146,11 @@ function App() {
   }
 
   return (
-    <div id="app" className={themeClass} onClickCapture={handleClickOutside}>
+    <div
+      id="app"
+      className={cn(themeClass, styles.Root)}
+      onClickCapture={handleClickOutside}
+    >
       <section>
         <menu className={styles.ExtractMenu}>
           {modes.map((mode) => (

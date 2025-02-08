@@ -2,6 +2,14 @@ import { style } from '@vanilla-extract/css';
 import { theme } from '@/ui/theme.css';
 
 const styles = {
+  Root: style({
+    padding: '1rem',
+    height: '100%',
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'scroll',
+  }),
   CodeBlock: style({
     padding: 10,
     margin: 0,
@@ -11,9 +19,12 @@ const styles = {
   }),
   VariablesContainer: style({
     width: '100%',
+    flex: '1',
+    overflow: 'hidden',
   }),
   VariablesTable: style({
     width: '100%',
+    height: '100%',
     tableLayout: 'fixed',
     borderRadius: theme.radii.md,
     overflow: 'hidden',
@@ -53,6 +64,7 @@ const styles = {
     maxWidth: '300px',
   }),
   ExtractMenu: style({
+    margin: 0,
     paddingLeft: 0,
     listStyleType: 'none',
     display: 'flex',

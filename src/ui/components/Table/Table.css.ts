@@ -57,7 +57,7 @@ export default {
   ]),
   TableHeader: style([common, ellipsis, cell, { display: 'block' }]),
   TableCell: style([common, ellipsis, cell, { display: 'block' }]),
-  TableBody: style([common, { maxHeight: '200px', overflow: 'auto' }]),
+  TableBody: style([common, { flex: 1, overflow: 'auto' }]),
   TableFoot: style([
     common,
     {
