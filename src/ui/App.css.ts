@@ -53,6 +53,9 @@ const styles = {
   ExtractMenu: style({
     paddingLeft: 0,
     listStyleType: 'none',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 2,
   }),
   SearchInput: style({
     marginBottom: '0.5rem',

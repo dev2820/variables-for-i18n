@@ -1,4 +1,4 @@
-import { createTheme } from '@vanilla-extract/css';
+import { createTheme, keyframes } from '@vanilla-extract/css';
 
 const [themeClass, theme] = createTheme({
   color: {
@@ -71,6 +71,28 @@ const [themeClass, theme] = createTheme({
     '2xl': '1rem',
     '3xl': '1.5rem',
     full: '9999px',
+  },
+  animation: {
+    fadeIn: keyframes({
+      from: {
+        opacity: 0,
+        transform: 'scale(0.9)',
+      },
+      to: {
+        opacity: 1,
+        transform: 'scale(1)',
+      },
+    }),
+    fadeOut: keyframes({
+      from: {
+        opacity: 1,
+        transform: 'scale(1)',
+      },
+      to: {
+        opacity: 0,
+        transform: 'scale(0.9)',
+      },
+    }),
   },
 });
 

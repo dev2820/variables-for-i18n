@@ -18,21 +18,35 @@ import { useResizeCorner } from './hooks/useResizeCorner';
 import { SearchInput } from './components/Input/SearchInput';
 import { cn } from './utils/cn';
 import { fullStyle } from './atom.css';
+import { Dialog } from './components/Dialog/Dialog';
+import { useDialog } from './hooks/useDialog';
 
 Channel.init();
 
 function App() {
   const [jsonStr, setJsonStr] = useState<string>('');
   const [searchStr, setSearchStr] = useState<string>('');
+  const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { isLoaded, modes, vars } = useI18nVariables();
   // util과 hook으로 분리 필요
   useEffect(() => {
     // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
     const removeListeners = [];
     removeListeners.push(
-      Channel.onMessage(EventType.SuccessToJSON, (payload) => {
+      Channel.onMessage(EventType.SuccessToJSON, async (payload) => {
         const result = payload as string;
         setJsonStr(result);
+
+        setTimeout(() => {
+          const resultNode = document.getElementById('extract-result');
+          const range = new Range();
+          range.setStart(resultNode, 0);
+          range.setEnd(resultNode, resultNode.childNodes.length);
+          document.getSelection().removeAllRanges();
+          document.getSelection().addRange(range);
+          document.execCommand('copy');
+          document.getSelection().removeAllRanges();
+        }, 1000);
       }),
     );
 
@@ -41,9 +55,11 @@ function App() {
     };
   }, []);
 
-  const handleClickExtractEn = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleClickExtract = (e: MouseEvent<HTMLButtonElement>) => {
     const modeId = e.currentTarget.dataset['mode'];
     Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
+
+    copyJsonDialogRef.current.showModal();
   };
 
   const cornerRef = useRef<HTMLDivElement>(null);
@@ -141,6 +157,17 @@ function App() {
 
   return (
     <div id="app" className={themeClass} onClickCapture={handleClickOutside}>
+      <section>
+        <menu className={styles.ExtractMenu}>
+          {modes.map((mode) => (
+            <li key={mode.modeId}>
+              <Button onClick={handleClickExtract} data-mode={mode.modeId}>
+                Extract JSON ({mode.name})
+              </Button>
+            </li>
+          ))}
+        </menu>
+      </section>
       <SearchInput
         id="search"
         placeholder="search"
@@ -235,21 +262,6 @@ function App() {
           </Table.Foot>
         </Table.Root>
       </div>
-      <section>
-        <h3>Export Result</h3>
-        <menu className={styles.ExtractMenu}>
-          {modes.map((mode) => (
-            <li key={mode.modeId}>
-              <Button onClick={handleClickExtractEn} data-mode={mode.modeId}>
-                Extract JSON ({mode.name})
-              </Button>
-            </li>
-          ))}
-        </menu>
-        <pre className={styles.CodeBlock}>
-          <code>{jsonStr}</code>
-        </pre>
-      </section>
       <input
         ref={inputRef}
         className={styles.CellEditor}
@@ -257,6 +269,12 @@ function App() {
         onBlur={handleBlurCell}
         data-hidden="true"
       />
+      <Dialog.Root ref={copyJsonDialogRef}>
+        <Dialog.CloseButton onClick={onCloseDialog}>X</Dialog.CloseButton>
+        <pre id="extract-result" className={styles.CodeBlock}>
+          <code>{jsonStr}</code>
+        </pre>
+      </Dialog.Root>
       <Corner ref={cornerRef} {...cornerHandlers} />
     </div>
   );
