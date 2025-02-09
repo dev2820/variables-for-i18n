@@ -170,7 +170,7 @@ function App() {
       />
       <div className={styles.VariablesContainer}>
         <Table.Root className={styles.VariablesTable}>
-          <Table.Head>
+          <Table.Head className={styles.VariablesTableHead}>
             <Table.Row>
               <Table.Header className={cn(styles.VariablesKeyColumn)}>
                 Key
@@ -242,7 +242,7 @@ function App() {
                 </Table.Row>
               ))}
           </Table.Body>
-          <Table.Foot>
+          <Table.Foot className={styles.VariablesTableFooter}>
             <Table.Row>
               <Table.Cell className={fullStyle}>
                 <button

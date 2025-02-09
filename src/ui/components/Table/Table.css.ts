@@ -50,14 +50,11 @@ export default {
       borderBottomWidth: '1px',
       borderBottomStyle: 'solid',
       borderBottomColor: theme.color.neutral[200],
-      ':last-child': {
-        borderBottomWidth: '0px',
-      },
     },
   ]),
   TableHeader: style([common, ellipsis, cell, { display: 'block' }]),
   TableCell: style([common, ellipsis, cell, { display: 'block' }]),
-  TableBody: style([common, { flex: 1, overflow: 'auto' }]),
+  TableBody: style([common, { flex: 1 }]),
   TableFoot: style([
     common,
     {

@@ -27,7 +27,15 @@ const styles = {
     height: '100%',
     tableLayout: 'fixed',
     borderRadius: theme.radii.md,
-    overflow: 'hidden',
+    overflow: 'auto',
+  }),
+  VariablesTableHead: style({
+    position: 'sticky',
+    top: 0,
+  }),
+  VariablesTableFooter: style({
+    position: 'sticky',
+    bottom: 0,
   }),
   VariablesModeColumn: style({
     flex: 1,
@@ -41,6 +49,7 @@ const styles = {
     width: '80px',
     maxWidth: '80px',
     minWidth: '80px',
+    flex: 'none',
   }),
   CellEditor: style({
     position: 'absolute',
