@@ -44,6 +44,7 @@ const styles = {
     width: '240px',
     maxWidth: '240px',
     minWidth: '240px',
+    textAlign: 'left',
   }),
   VariablesDelColumn: style({
     width: '80px',
