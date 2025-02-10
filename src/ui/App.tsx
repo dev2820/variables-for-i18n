@@ -271,12 +271,15 @@ function App() {
         <Dialog.Body>
           <pre id="extract-result" className={styles.CodeBlock}>
             <code>{jsonStr}</code>
+            <button
+              className={styles.CopyJsonButton}
+              onClick={() => copyContentOfNode('#extract-result')}
+            >
+              Copy
+            </button>
           </pre>
         </Dialog.Body>
         <Dialog.Footer>
-          <button onClick={() => copyContentOfNode('#extract-result')}>
-            Copy
-          </button>
           <button onClick={onCloseDialog}>Close</button>
         </Dialog.Footer>
       </Dialog.Root>

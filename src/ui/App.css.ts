@@ -11,11 +11,13 @@ const styles = {
     overflow: 'scroll',
   }),
   CodeBlock: style({
-    padding: 10,
     margin: 0,
     height: '100%',
+    maxHeight: '360px',
+    overflow: 'auto',
     background: '#cccccc',
     color: '#333333',
+    position: 'relative',
   }),
   VariablesContainer: style({
     width: '100%',
@@ -99,6 +101,11 @@ const styles = {
     ':active': {
       background: theme.color.blackAlpha.active,
     },
+  }),
+  CopyJsonButton: style({
+    position: 'absolute',
+    right: 4,
+    top: 4,
   }),
 };
 
