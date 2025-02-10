@@ -210,20 +210,20 @@ function App() {
                       {r.name}
                     </div>
                   </Table.Cell>
-                  {Object.entries(r.valuesByMode).map((entry) => (
+                  {modes.map((mode) => (
                     <Table.Cell
-                      key={entry[0]}
+                      key={r.valuesByMode[mode.modeId] as string}
                       className={styles.VariablesModeColumn}
                     >
                       {
                         <div
                           onClick={handleClickCell}
                           data-type="value"
-                          data-mode={entry[0]}
+                          data-mode={mode.name}
                           data-id={r.id}
                           className={fullStyle}
                         >
-                          {entry[1]}
+                          {r.valuesByMode[mode.modeId]}
                         </div>
                       }
                     </Table.Cell>
