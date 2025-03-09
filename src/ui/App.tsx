@@ -5,6 +5,7 @@ import React, {
   type MouseEvent,
   type FocusEvent,
   type KeyboardEvent,
+  type FormEvent,
 } from 'react';
 import { Button } from './components/Button';
 import EventType from '../shared/event-type';
@@ -13,6 +14,7 @@ import styles from './App.css';
 import { useI18nVariables } from './hooks/useI18nVariables';
 import { Table } from './components/Table/Table';
 import { themeClass } from './theme.css';
+import * as patterns from './pattern.css';
 import { Corner } from './components/Corner/Corner';
 import { useResizeCorner } from './hooks/useResizeCorner';
 import { SearchInput } from './components/Input/SearchInput';
@@ -21,11 +23,12 @@ import { fullStyle } from './atom.css';
 import { Dialog } from './components/Dialog/Dialog';
 import { useDialog } from './hooks/useDialog';
 import { copyContentOfNode } from './utils/copy';
+import { prettyPrintJson } from './utils/pretty-print-json';
 
 Channel.init();
 
 function App() {
-  const [jsonStr, setJsonStr] = useState<string>('');
+  const [json, setJson] = useState<object>({});
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { isLoaded, modes, vars } = useI18nVariables();
@@ -36,7 +39,8 @@ function App() {
     removeListeners.push(
       Channel.onMessage(EventType.SuccessToJSON, async (payload) => {
         const result = payload as string;
-        setJsonStr(result);
+        const json = JSON.parse(result);
+        setJson(json);
       }),
     );
 
@@ -46,6 +50,12 @@ function App() {
   }, []);
 
   const handleClickExtract = (e: MouseEvent<HTMLButtonElement>) => {
+    const modeId = e.currentTarget.dataset['mode'];
+    Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
+
+    copyJsonDialogRef.current.showModal();
+  };
+  const handleClickFilteredExtract = (e: MouseEvent<HTMLButtonElement>) => {
     const modeId = e.currentTarget.dataset['mode'];
     Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
 
@@ -141,6 +151,18 @@ function App() {
       }
     }
   };
+
+  const handleCopy = (e: FormEvent<HTMLFormElement>) => {
+    const $form = e.currentTarget as HTMLFormElement;
+    const language = $form.language.value;
+
+    console.log(language);
+    e.preventDefault();
+  };
+
+  const handleChangeCopyLanguage = () => {};
+  const toggleCopyOnlyTheSearched = () => {};
+
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
   }
@@ -159,7 +181,7 @@ function App() {
                 onClick={handleClickExtract}
                 data-mode={mode.modeId}
               >
-                Extract JSON ({mode.name})
+                Extract JSON
               </Button.Primary>
             </li>
           ))}
@@ -271,15 +293,61 @@ function App() {
           <Dialog.CloseButton onClick={onCloseDialog}>X</Dialog.CloseButton>
           <Dialog.Title>Variables to JSON</Dialog.Title>
         </Dialog.Header>
-        <Dialog.Body>
+        <Dialog.Body className={cn(patterns.Display.flex, patterns.FlexCol)}>
+          <form onSubmit={handleCopy}>
+            <fieldset>
+              <legend>language</legend>
+              <div className={cn(patterns.FlexRow, patterns.Gap[3])}>
+                {modes.map((mode, idx) => (
+                  <div
+                    key={mode.modeId}
+                    className={cn(
+                      patterns.Display.inlineFlex,
+                      patterns.FlexRow,
+                      patterns.FlexCenter,
+                      patterns.Height[6],
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="language"
+                      id={mode.modeId}
+                      value={mode.modeId}
+                      defaultChecked={idx === 0}
+                      onChange={handleChangeCopyLanguage}
+                      className={styles.LanguageOptionsInput}
+                    />
+                    <label
+                      htmlFor={mode.modeId}
+                      className={patterns.Leading[6]}
+                    >
+                      {mode.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </fieldset>
+            <label>
+              Copy only the searched
+              <input
+                type="checkbox"
+                name="copy-only-the-searched"
+                onChange={toggleCopyOnlyTheSearched}
+                defaultChecked={true}
+              />
+            </label>
+            <div className={cn(patterns.Display.flex, patterns.FlexRowReverse)}>
+              <Button.Primary
+                type="submit"
+                onClick={() => copyContentOfNode('#extract-result > code')}
+              >
+                Copy
+              </Button.Primary>
+            </div>
+          </form>
           <pre id="extract-result" className={styles.CodeBlock}>
-            <code>{jsonStr}</code>
-            <button
-              className={styles.CopyJsonButton}
-              onClick={() => copyContentOfNode('#extract-result')}
-            >
-              Copy
-            </button>
+            <h3>preview</h3>
+            <code>{prettyPrintJson(json)}</code>
           </pre>
         </Dialog.Body>
         <Dialog.Footer>

@@ -11,7 +11,8 @@ export default {
       animationFillMode: 'forwards',
       width: '100%',
       maxWidth: '544px',
-      height: '80%',
+      height: '100%',
+      maxHeight: '480px',
       padding: 0,
       selectors: {
         '&[open]': {
@@ -32,10 +33,11 @@ export default {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'scroll',
+    overflow: 'hidden',
   }),
   DialogHeader: style({
     padding: '1rem 0.5rem',
+    flex: 'none',
   }),
   DialogTitle: style({
     margin: 0,
@@ -45,10 +47,12 @@ export default {
   DialogBody: style({
     padding: '1rem 0.5rem',
     flex: '1',
+    overflow: 'auto',
   }),
   DialogFooter: style({
     padding: '1rem 0.5rem',
     display: 'flex',
+    flex: 'none',
     flexDirection: 'row-reverse',
   }),
 };

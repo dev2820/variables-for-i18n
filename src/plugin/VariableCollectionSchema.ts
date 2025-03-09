@@ -126,15 +126,12 @@ class VariableCollectionSchema {
       variable.name,
       variable.valuesByMode[modeId],
     ]);
-    return `
-{
-${entries
-  .map(([key, value]) => {
-    return `  "${key}": "${value}",`;
-  })
-  .join('\n')}  
-}
-`;
+    const json = entries.reduce((obj, [name, value]) => {
+      assignStr(obj, name as string, value as string);
+      return obj;
+    }, {});
+
+    return JSON.stringify(json);
   }
 }
 
@@ -149,4 +146,16 @@ const createDefaultName = (names: string[], defaultName: string) => {
   }
 
   return name;
+};
+
+const assignStr = (obj: Object, key: string, value: string) => {
+  const [propertyName, ...restPath] = key.split('/');
+  if (restPath.length > 0) {
+    if (obj[propertyName] === undefined) {
+      obj[propertyName] = {};
+    }
+    assignStr(obj[propertyName], restPath.join('/'), value);
+  } else {
+    obj[propertyName] = value;
+  }
 };

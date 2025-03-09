@@ -1,5 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { theme } from '@/ui/theme.css';
+import { FlexRow } from './pattern.css';
 
 const styles = {
   Root: style([
@@ -18,8 +19,6 @@ const styles = {
   ]),
   CodeBlock: style({
     margin: 0,
-    height: '100%',
-    maxHeight: '360px',
     overflow: 'auto',
     background: '#cccccc',
     color: '#333333',
@@ -112,6 +111,11 @@ const styles = {
     position: 'absolute',
     right: 4,
     top: 4,
+  }),
+  LanguageOptionsContainer: style([FlexRow]),
+  LanguageOptionsInput: style({
+    margin: 0,
+    marginRight: 4,
   }),
 };
 

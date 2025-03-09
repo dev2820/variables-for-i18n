@@ -2,7 +2,7 @@ import { createTheme, keyframes } from '@vanilla-extract/css';
 
 const [themeClass, theme] = createTheme({
   color: {
-    brand: {
+    primary: {
       default: 'oklch(0.723 0.219 149.579)',
       50: 'oklch(0.982 0.018 155.826)',
       100: 'oklch(0.962 0.044 156.743)',
