@@ -32,7 +32,7 @@ export default {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden',
+    overflow: 'scroll',
   }),
   DialogHeader: style({
     padding: '1rem 0.5rem',
