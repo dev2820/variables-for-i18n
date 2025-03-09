@@ -5,7 +5,7 @@ import React, {
   type MouseEvent,
   type FocusEvent,
   type KeyboardEvent,
-  type FormEvent,
+  useMemo,
 } from 'react';
 import { Button } from './components/Button';
 import EventType from '../shared/event-type';
@@ -24,41 +24,48 @@ import { Dialog } from './components/Dialog/Dialog';
 import { useDialog } from './hooks/useDialog';
 import { copyContentOfNode } from './utils/copy';
 import { prettyPrintJson } from './utils/pretty-print-json';
+import { Mode } from '@/shared/types/mode';
+import { varsToJson } from '@/shared/utils/vars-to-json';
 
 Channel.init();
 
 function App() {
   const [json, setJson] = useState<object>({});
+  const [currentMode, setCurrentMode] = useState<Mode['modeId'] | undefined>(
+    undefined,
+  );
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { isLoaded, modes, vars } = useI18nVariables();
-  // util과 hook으로 분리 필요
-  useEffect(() => {
-    // 브라우저(iframe)에서 'message' 이벤트(= figma.ui.postMessage()) 수신
-    const removeListeners = [];
-    removeListeners.push(
-      Channel.onMessage(EventType.SuccessToJSON, async (payload) => {
-        const result = payload as string;
-        const json = JSON.parse(result);
-        setJson(json);
-      }),
-    );
+  const [isCheckedOnlySearchedResult, setIsCheckedOnlySearchedResult] =
+    useState<boolean>(true);
 
-    return () => {
-      removeListeners.forEach((l) => l());
-    };
-  }, []);
+  const filteredJson = useMemo(() => {
+    if (!isCheckedOnlySearchedResult) return varsToJson(vars, currentMode);
+    else {
+      if (searchStr.length <= 0) {
+        return varsToJson(vars, currentMode);
+      }
+
+      return varsToJson(
+        vars.filter((r) => {
+          if (searchStr.length > 0) {
+            if (r.name.indexOf(searchStr) >= 0) return true;
+            return Object.values(r.valuesByMode).some(
+              (v) => v.toString().indexOf(searchStr) >= 0,
+            );
+          }
+          return true;
+        }),
+        currentMode,
+      );
+    }
+  }, [json, isCheckedOnlySearchedResult, searchStr, currentMode]);
 
   const handleClickExtract = (e: MouseEvent<HTMLButtonElement>) => {
-    const modeId = e.currentTarget.dataset['mode'];
-    Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
-
-    copyJsonDialogRef.current.showModal();
-  };
-  const handleClickFilteredExtract = (e: MouseEvent<HTMLButtonElement>) => {
-    const modeId = e.currentTarget.dataset['mode'];
-    Channel.sendMessage(EventType.RequestToJSON, { modeId: modeId });
-
+    const modeId = e.currentTarget.dataset['modeId'];
+    setCurrentMode(modeId);
+    setJson(varsToJson(vars, modeId));
     copyJsonDialogRef.current.showModal();
   };
 
@@ -88,8 +95,8 @@ function App() {
     inputRef.current.dataset['hidden'] = 'false';
 
     if (typeOfCell === 'value') {
-      const mode = $target.dataset['mode'];
-      inputRef.current.dataset['mode'] = mode;
+      const mode = $target.dataset['modeId'];
+      inputRef.current.dataset['modeId'] = mode;
     }
   };
 
@@ -115,12 +122,11 @@ function App() {
     } else if ($target.dataset['type'] === 'value') {
       const value = $target.value;
       const id = $target.dataset['id'];
-      const mode = $target.dataset['mode'];
-
+      const modeId = $target.dataset['modeId'];
       Channel.sendMessage(EventType.ChangeVariableValue, {
         value: value,
         key: id,
-        mode: mode,
+        mode: modeId,
       });
     }
     inputRef.current.value = '';
@@ -152,16 +158,9 @@ function App() {
     }
   };
 
-  const handleCopy = (e: FormEvent<HTMLFormElement>) => {
-    const $form = e.currentTarget as HTMLFormElement;
-    const language = $form.language.value;
-
-    console.log(language);
-    e.preventDefault();
+  const toggleCopyOnlyTheSearched = () => {
+    setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
-
-  const handleChangeCopyLanguage = () => {};
-  const toggleCopyOnlyTheSearched = () => {};
 
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
@@ -179,9 +178,9 @@ function App() {
             <li key={mode.modeId}>
               <Button.Primary
                 onClick={handleClickExtract}
-                data-mode={mode.modeId}
+                data-mode-id={mode.modeId}
               >
-                Extract JSON
+                Extract JSON ({mode.name})
               </Button.Primary>
             </li>
           ))}
@@ -244,7 +243,7 @@ function App() {
                         <div
                           onClick={handleClickCell}
                           data-type="value"
-                          data-mode={mode.name}
+                          data-mode-id={mode.modeId}
                           data-id={r.id}
                           className={fullStyle}
                         >
@@ -294,60 +293,26 @@ function App() {
           <Dialog.Title>Variables to JSON</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className={cn(patterns.Display.flex, patterns.FlexCol)}>
-          <form onSubmit={handleCopy}>
-            <fieldset>
-              <legend>language</legend>
-              <div className={cn(patterns.FlexRow, patterns.Gap[3])}>
-                {modes.map((mode, idx) => (
-                  <div
-                    key={mode.modeId}
-                    className={cn(
-                      patterns.Display.inlineFlex,
-                      patterns.FlexRow,
-                      patterns.FlexCenter,
-                      patterns.Height[6],
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="language"
-                      id={mode.modeId}
-                      value={mode.modeId}
-                      defaultChecked={idx === 0}
-                      onChange={handleChangeCopyLanguage}
-                      className={styles.LanguageOptionsInput}
-                    />
-                    <label
-                      htmlFor={mode.modeId}
-                      className={patterns.Leading[6]}
-                    >
-                      {mode.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </fieldset>
-            <label>
-              Copy only the searched
-              <input
-                type="checkbox"
-                name="copy-only-the-searched"
-                onChange={toggleCopyOnlyTheSearched}
-                defaultChecked={true}
-              />
-            </label>
-            <div className={cn(patterns.Display.flex, patterns.FlexRowReverse)}>
-              <Button.Primary
-                type="submit"
-                onClick={() => copyContentOfNode('#extract-result > code')}
-              >
-                Copy
-              </Button.Primary>
-            </div>
-          </form>
+          <label>
+            Copy only the search results
+            <input
+              type="checkbox"
+              name="copy-only-the-searched"
+              onChange={toggleCopyOnlyTheSearched}
+              checked={isCheckedOnlySearchedResult}
+            />
+          </label>
+          <div className={cn(patterns.Display.flex, patterns.FlexRowReverse)}>
+            <Button.Primary
+              type="button"
+              onClick={() => copyContentOfNode('#extract-result > code')}
+            >
+              Copy
+            </Button.Primary>
+          </div>
           <pre id="extract-result" className={styles.CodeBlock}>
             <h3>preview</h3>
-            <code>{prettyPrintJson(json)}</code>
+            <code>{prettyPrintJson(filteredJson)}</code>
           </pre>
         </Dialog.Body>
         <Dialog.Footer>

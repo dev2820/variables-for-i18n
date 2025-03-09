@@ -1,3 +1,5 @@
+import { assignStr } from '@/shared/utils/assign-str';
+
 class VariableCollectionSchema {
   private collectionName: string;
   private cachedCollectionId: string;
@@ -146,16 +148,4 @@ const createDefaultName = (names: string[], defaultName: string) => {
   }
 
   return name;
-};
-
-const assignStr = (obj: Object, key: string, value: string) => {
-  const [propertyName, ...restPath] = key.split('/');
-  if (restPath.length > 0) {
-    if (obj[propertyName] === undefined) {
-      obj[propertyName] = {};
-    }
-    assignStr(obj[propertyName], restPath.join('/'), value);
-  } else {
-    obj[propertyName] = value;
-  }
 };
