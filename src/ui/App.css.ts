@@ -2,14 +2,20 @@ import { style } from '@vanilla-extract/css';
 import { theme } from '@/ui/theme.css';
 
 const styles = {
-  Root: style({
-    padding: '1rem',
-    height: '100%',
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'scroll',
-  }),
+  Root: style([
+    {
+      padding: '1rem',
+      height: '100%',
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'scroll',
+    },
+    {
+      fontFamily:
+        'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+    },
+  ]),
   CodeBlock: style({
     margin: 0,
     height: '100%',
