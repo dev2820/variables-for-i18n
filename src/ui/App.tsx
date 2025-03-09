@@ -6,7 +6,7 @@ import React, {
   type FocusEvent,
   type KeyboardEvent,
 } from 'react';
-import { Button } from './components/Button/Button';
+import { Button } from './components/Button';
 import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
@@ -155,9 +155,12 @@ function App() {
         <menu className={styles.ExtractMenu}>
           {modes.map((mode) => (
             <li key={mode.modeId}>
-              <Button onClick={handleClickExtract} data-mode={mode.modeId}>
+              <Button.Primary
+                onClick={handleClickExtract}
+                data-mode={mode.modeId}
+              >
                 Extract JSON ({mode.name})
-              </Button>
+              </Button.Primary>
             </li>
           ))}
         </menu>

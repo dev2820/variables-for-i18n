@@ -46,6 +46,14 @@ const [themeClass, theme] = createTheme({
       active: 'rgba(0,0,0,0.16)',
     },
   },
+  transitionProperty: {
+    colors:
+      'color, background-color, border-color, text-decoration-color, fill, stroke',
+  },
+  duration: {
+    fast: '100ms',
+    normal: '200ms',
+  },
   font: {
     body: 'Inter',
   },
