@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useRef,
   useState,
   type MouseEvent,
@@ -26,6 +25,7 @@ import { copyContentOfNode } from './utils/copy';
 import { prettyPrintJson } from './utils/pretty-print-json';
 import { Mode } from '@/shared/types/mode';
 import { varsToJson } from '@/shared/utils/vars-to-json';
+import { SpreadSheet } from './components/SpreadSheet/SpreadSheet';
 
 Channel.init();
 
@@ -34,6 +34,7 @@ function App() {
   const [currentMode, setCurrentMode] = useState<Mode['modeId'] | undefined>(
     undefined,
   );
+
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { isLoaded, modes, vars } = useI18nVariables();
@@ -193,6 +194,7 @@ function App() {
         onChange={(e) => setSearchStr(e.target.value)}
       />
       <div className={styles.VariablesContainer}>
+        <SpreadSheet />
         <Table.Root className={styles.VariablesTable}>
           <Table.Head className={styles.VariablesTableHead}>
             <Table.Row>

@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@jspreadsheet-ce/react':
+    specifier: '5'
+    version: 5.0.2
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
@@ -825,6 +828,16 @@ packages:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
     dev: true
+
+  /@jspreadsheet-ce/react@5.0.2:
+    resolution: {integrity: sha512-KKUXQ+NkuDAe0QQ1ob7ivjxcE9Eu3Vrn41l4s1ZdZhdZDr+yohzEBwdduBzeTfwR2+aUTAYAbE4gNceDFdy8QQ==}
+    dependencies:
+      jspreadsheet-ce: 5.0.2
+    dev: false
+
+  /@jspreadsheet/formula@2.0.2:
+    resolution: {integrity: sha512-PDQYf9REQA53I7tVYkvkeyQxrd5jcjUeHgItYnRpjN2QiIQwawSqBDtGGEVQTSboTG+JwgGCuhvOpj7FxeKwew==}
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3464,6 +3477,17 @@ packages:
     optionalDependencies:
       graceful-fs: 4.2.11
     dev: true
+
+  /jspreadsheet-ce@5.0.2:
+    resolution: {integrity: sha512-Xhz/6PNe3LnxS/sp02pWN6DTn8ARW2nka6Hwe1aOpvvXXilzGYGlrMUWWjjC5ktVbbBEGl3moUQfCxBsE0scrg==}
+    dependencies:
+      '@jspreadsheet/formula': 2.0.2
+      jsuites: 5.10.0
+    dev: false
+
+  /jsuites@5.10.0:
+    resolution: {integrity: sha512-s5GCJkl+LVtuPPOBUgqEA6zJf39+hGorsaw07UTkLjTFs3CmrfRTdUfN82izP266lB81hGQKRvLysIRKw+gggQ==}
+    dev: false
 
   /jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
