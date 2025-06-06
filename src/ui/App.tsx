@@ -163,7 +163,7 @@ function App() {
     setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
 
-  const handleChangeSpreadSheet = (d: string[], index: number) => {
+  const handleChangeSpreadSheet = (index: number, d: string[]) => {
     // 일단 변화는 1개만 일어난다고 가정한다.
     const originalData = vars[index];
 
@@ -185,6 +185,12 @@ function App() {
         });
       }
     }
+  };
+
+  const handleDeleteRow = (index: number) => {
+    Channel.sendMessage(EventType.DeleteVariable, {
+      key: vars[index].id,
+    });
   };
 
   const columns = useMemo(
@@ -249,6 +255,8 @@ function App() {
           data={data}
           columns={columns}
           onChange={handleChangeSpreadSheet}
+          onDeleteRow={handleDeleteRow}
+          onAddRow={handleClickCreateDefaultI18n}
         />
         <Table.Root className={styles.VariablesTable}>
           <Table.Head className={styles.VariablesTableHead}>

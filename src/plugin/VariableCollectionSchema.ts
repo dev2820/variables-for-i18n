@@ -112,6 +112,7 @@ class VariableCollectionSchema {
       return false;
     }
   }
+
   async deleteVariableById(variableKey: Variable['key']) {
     try {
       const variable = await figma.variables.getVariableByIdAsync(variableKey);
