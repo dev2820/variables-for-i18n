@@ -11,7 +11,6 @@ import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
 import { useI18nVariables } from './hooks/useI18nVariables';
-import { Table } from './components/Table/Table';
 import { themeClass } from './theme.css';
 import * as patterns from './pattern.css';
 import { Corner } from './components/Corner/Corner';
@@ -258,92 +257,6 @@ function App() {
           onDeleteRow={handleDeleteRow}
           onAddRow={handleClickCreateDefaultI18n}
         />
-        <Table.Root className={styles.VariablesTable}>
-          <Table.Head className={styles.VariablesTableHead}>
-            <Table.Row>
-              <Table.Header className={cn(styles.VariablesKeyColumn)}>
-                Key
-              </Table.Header>
-              {modes.map((m) => (
-                <Table.Header
-                  key={m.name}
-                  className={styles.VariablesModeColumn}
-                >
-                  {m.name}
-                </Table.Header>
-              ))}
-              <Table.Header className={styles.VariablesDelColumn}>
-                Delete
-              </Table.Header>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {vars
-              .filter((r) => {
-                if (searchStr.length > 0) {
-                  if (r.name.indexOf(searchStr) >= 0) return true;
-                  return Object.values(r.valuesByMode).some(
-                    (v) => v.toString().indexOf(searchStr) >= 0,
-                  );
-                }
-                return true;
-              })
-              .map((r) => (
-                <Table.Row key={r.id}>
-                  <Table.Cell className={styles.VariablesKeyColumn}>
-                    <div
-                      onClick={handleClickCell}
-                      data-type="key"
-                      data-id={r.id}
-                    >
-                      {r.name}
-                    </div>
-                  </Table.Cell>
-                  {modes.map((mode) => (
-                    <Table.Cell
-                      key={r.valuesByMode[mode.modeId] as string}
-                      className={styles.VariablesModeColumn}
-                    >
-                      {
-                        <div
-                          onClick={handleClickCell}
-                          data-type="value"
-                          data-mode-id={mode.modeId}
-                          data-id={r.id}
-                          className={fullStyle}
-                        >
-                          {r.valuesByMode[mode.modeId]}
-                        </div>
-                      }
-                    </Table.Cell>
-                  ))}
-                  <Table.Cell className={styles.VariablesDelColumn}>
-                    {
-                      <button
-                        className={styles.CellDeleteBtn}
-                        onClick={handleClickDeleteCell}
-                        data-id={r.id}
-                      >
-                        Del
-                      </button>
-                    }
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-          </Table.Body>
-          <Table.Foot className={styles.VariablesTableFooter}>
-            <Table.Row>
-              <Table.Cell className={fullStyle}>
-                <button
-                  className={styles.AddDefaultI18nBtn}
-                  onClick={handleClickCreateDefaultI18n}
-                >
-                  + Add i18n
-                </button>
-              </Table.Cell>
-            </Table.Row>
-          </Table.Foot>
-        </Table.Root>
       </div>
       <input
         ref={inputRef}
