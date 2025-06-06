@@ -45,18 +45,14 @@ const styles = {
     bottom: 0,
   }),
   VariablesModeColumn: style({
-    flex: 1,
+    width: '30%',
   }),
   VariablesKeyColumn: style({
-    width: '240px',
-    maxWidth: '240px',
-    minWidth: '240px',
+    width: '40%',
     textAlign: 'left',
   }),
   VariablesDelColumn: style({
-    width: '80px',
-    maxWidth: '80px',
-    minWidth: '80px',
+    width: '10%',
     flex: 'none',
   }),
   CellEditor: style({

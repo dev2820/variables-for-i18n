@@ -163,9 +163,21 @@ function App() {
     setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
 
+  const handleChangeSpreadSheet = (data: any[]) => {
+    console.log(data);
+  };
+
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
   }
+
+  const columns = [
+    { title: 'Key', width: '300px' },
+    ...modes.map((mode) => ({
+      title: mode.name,
+      width: '100px',
+    })),
+  ];
 
   return (
     <div
@@ -194,7 +206,11 @@ function App() {
         onChange={(e) => setSearchStr(e.target.value)}
       />
       <div className={styles.VariablesContainer}>
-        <SpreadSheet />
+        <SpreadSheet
+          data={vars}
+          columns={columns}
+          onChange={handleChangeSpreadSheet}
+        />
         <Table.Root className={styles.VariablesTable}>
           <Table.Head className={styles.VariablesTableHead}>
             <Table.Row>
