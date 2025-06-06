@@ -163,22 +163,61 @@ function App() {
     setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
 
-  const handleChangeSpreadSheet = (data: any[]) => {
-    console.log(data);
+  const handleChangeSpreadSheet = (d: string[], index: number) => {
+    // 일단 변화는 1개만 일어난다고 가정한다.
+    const originalData = vars[index];
+
+    const id = originalData.id;
+    if (originalData) {
+      if (originalData.name !== d[0]) {
+        Channel.sendMessage(EventType.ChangeVariableName, {
+          name: d[0],
+          key: id,
+        });
+      }
+    }
+    for (let i = 0; i < modes.length; i++) {
+      if (d[i + 1] !== originalData.valuesByMode[modes[i].modeId]) {
+        Channel.sendMessage(EventType.ChangeVariableValue, {
+          value: d[i + 1],
+          key: id,
+          mode: modes[i].modeId,
+        });
+      }
+    }
   };
+
+  const columns = useMemo(
+    () => [
+      { title: 'Key', width: '300px' },
+      ...modes.map((mode) => ({
+        title: mode.name,
+        width: '200px',
+      })),
+    ],
+    [modes],
+  );
+
+  const data = useMemo(() => {
+    return vars
+      .filter((r) => {
+        if (searchStr.length > 0) {
+          if (r.name.indexOf(searchStr) >= 0) return true;
+          return Object.values(r.valuesByMode).some(
+            (v) => v.toString().indexOf(searchStr) >= 0,
+          );
+        }
+        return true;
+      })
+      .map((v) => [
+        v.name,
+        ...modes.map((mode) => v.valuesByMode[mode.modeId]),
+      ]);
+  }, [vars, modes, searchStr]);
 
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
   }
-
-  const columns = [
-    { title: 'Key', width: '300px' },
-    ...modes.map((mode) => ({
-      title: mode.name,
-      width: '100px',
-    })),
-  ];
-
   return (
     <div
       id="app"
@@ -207,7 +246,7 @@ function App() {
       />
       <div className={styles.VariablesContainer}>
         <SpreadSheet
-          data={vars}
+          data={data}
           columns={columns}
           onChange={handleChangeSpreadSheet}
         />
