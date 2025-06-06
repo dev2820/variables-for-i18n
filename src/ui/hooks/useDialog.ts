@@ -11,11 +11,11 @@ export const useDialog = () => {
       }
     };
     if (dialogRef.current) {
-      dialogRef.current.addEventListener('click', onClickBackdrop);
+      dialogRef.current?.addEventListener('click', onClickBackdrop);
     }
 
     return () => {
-      dialogRef.current.removeEventListener('click', onClickBackdrop);
+      dialogRef.current?.removeEventListener('click', onClickBackdrop);
     };
   });
   const onClose = () => {
