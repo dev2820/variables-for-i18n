@@ -80,47 +80,42 @@ export function SpreadSheet({
   return (
     <div className={styles.SpreadSheet}>
       {/**
-       * add variable 메뉴 위치 수정하기
        *
        * 필터기능
        *  query를 props로 받고 필터에 따라 데이터 보여주기
        *  변경에 따라 spreadsheet.current[0].search('app') 실행
        */}
-      <Button.Primary
-        onClick={() => {
-          onAddRow();
-        }}
-      >
-        Add Variable
-      </Button.Primary>
-      <Spreadsheet
-        ref={spreadsheetRef}
-        tabs={false}
-        toolbar={false}
-        contextMenu={contextmenu}
-        allowDeleteWorksheet={false}
-        allowRenameWorksheet={false}
-        allowMoveWorksheet={false}
-        allowCreateWorksheet={false}
-        allowAddWorksheet={false}
-        allowDeleteColumn={false}
-        allowInsertColumn={false}
-        allowInsertRow={false}
-        allowManualInsertColumn={false}
-        allowManualInsertRow={false}
-        allowSelect={false}
-        search={true}
-        onbeforechange={handleBeforeChange}
-        onchange={handleChange}
-        onbeforedeleterow={handleBeforeChange}
-      >
-        <Worksheet
-          minDimensions={[1, 1]}
-          allowComments={false}
-          data={data}
-          columns={columns}
-        />
-      </Spreadsheet>
+      <div className={styles.SpreadSheetContainer}>
+        <Spreadsheet
+          ref={spreadsheetRef}
+          tabs={false}
+          toolbar={false}
+          contextMenu={contextmenu}
+          allowDeleteWorksheet={false}
+          allowRenameWorksheet={false}
+          allowMoveWorksheet={false}
+          allowCreateWorksheet={false}
+          allowAddWorksheet={false}
+          allowDeleteColumn={false}
+          allowInsertColumn={false}
+          allowInsertRow={false}
+          allowManualInsertColumn={false}
+          allowManualInsertRow={false}
+          allowSelect={false}
+          search={true}
+          onbeforechange={handleBeforeChange}
+          onchange={handleChange}
+          onbeforedeleterow={handleBeforeChange}
+        >
+          <Worksheet
+            minDimensions={[1, 1]}
+            allowComments={false}
+            data={data}
+            columns={columns}
+          />
+        </Spreadsheet>
+      </div>
+      <Button.Primary onClick={onAddRow}>Add Variable</Button.Primary>
     </div>
   );
 }
