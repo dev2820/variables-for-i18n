@@ -5,6 +5,8 @@ import React, {
   type FocusEvent,
   type KeyboardEvent,
   useMemo,
+  useCallback,
+  useEffect,
 } from 'react';
 import { Button } from './components/Button';
 import EventType from '../shared/event-type';
@@ -17,7 +19,6 @@ import { Corner } from './components/Corner/Corner';
 import { useResizeCorner } from './hooks/useResizeCorner';
 import { SearchInput } from './components/Input/SearchInput';
 import { cn } from './utils/cn';
-import { fullStyle } from './atom.css';
 import { Dialog } from './components/Dialog/Dialog';
 import { useDialog } from './hooks/useDialog';
 import { copyContentOfNode } from './utils/copy';
@@ -162,29 +163,36 @@ function App() {
     setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
 
-  const handleChangeSpreadSheet = (index: number, d: string[]) => {
-    // 일단 변화는 1개만 일어난다고 가정한다.
-    const originalData = vars[index];
+  const varsRef = useRef<Variable[]>([]);
+  useEffect(() => {
+    varsRef.current = vars;
+  }, [vars]);
 
-    const id = originalData.id;
-    if (originalData) {
-      if (originalData.name !== d[0]) {
-        Channel.sendMessage(EventType.ChangeVariableName, {
-          name: d[0],
-          key: id,
-        });
+  const handleChangeSpreadSheet = useCallback(
+    (index: number, d: string[]) => {
+      // 일단 변화는 1개만 일어난다고 가정한다.
+      const originalData = varsRef.current[index];
+      const id = originalData.id;
+      if (originalData) {
+        if (originalData.name !== d[0]) {
+          Channel.sendMessage(EventType.ChangeVariableName, {
+            name: d[0],
+            key: id,
+          });
+        }
       }
-    }
-    for (let i = 0; i < modes.length; i++) {
-      if (d[i + 1] !== originalData.valuesByMode[modes[i].modeId]) {
-        Channel.sendMessage(EventType.ChangeVariableValue, {
-          value: d[i + 1],
-          key: id,
-          mode: modes[i].modeId,
-        });
+      for (let i = 0; i < modes.length; i++) {
+        if (d[i + 1] !== originalData.valuesByMode[modes[i].modeId]) {
+          Channel.sendMessage(EventType.ChangeVariableValue, {
+            value: d[i + 1],
+            key: id,
+            mode: modes[i].modeId,
+          });
+        }
       }
-    }
-  };
+    },
+    [modes],
+  );
 
   const handleDeleteRow = (index: number, numOfRows: number) => {
     const deletedKeys = [];
@@ -208,21 +216,11 @@ function App() {
   );
 
   const data = useMemo(() => {
-    return vars
-      .filter((r) => {
-        if (searchStr.length > 0) {
-          if (r.name.indexOf(searchStr) >= 0) return true;
-          return Object.values(r.valuesByMode).some(
-            (v) => v.toString().indexOf(searchStr) >= 0,
-          );
-        }
-        return true;
-      })
-      .map((v) => [
-        v.name,
-        ...modes.map((mode) => v.valuesByMode[mode.modeId]),
-      ]);
-  }, [vars, modes, searchStr]);
+    return vars.map((v) => [
+      v.name,
+      ...modes.map((mode) => v.valuesByMode[mode.modeId]),
+    ]);
+  }, [vars, modes]);
 
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;

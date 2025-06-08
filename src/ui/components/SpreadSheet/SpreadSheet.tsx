@@ -1,8 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Spreadsheet, Worksheet } from '@jspreadsheet-ce/react';
 import { useJssStyle } from './useJssStyle';
 import { useJSuiteStyle } from './useJSuiteStyle';
 import * as styles from './SpreadSheet.css';
+import { Button } from '../Button';
 
 type SpreadSheetProps = {
   data: any[]; // [key, mode1, mode2, ...]
@@ -24,6 +25,13 @@ export function SpreadSheet({
 
   useJssStyle();
   useJSuiteStyle();
+
+  useEffect(() => {
+    if (spreadsheetRef.current) {
+      prevData.current = data;
+      spreadsheetRef.current[0].setData(data);
+    }
+  }, [data]);
 
   const handleBeforeChange = useCallback(
     (spreadsheet: jspreadsheet.WorksheetInstance) => {
@@ -77,6 +85,13 @@ export function SpreadSheet({
        * query를 props로 받고
        * 변경에 따라 spreadsheet.current[0].search('app') 실행
        */}
+      <Button.Primary
+        onClick={() => {
+          onAddRow();
+        }}
+      >
+        Add Variable
+      </Button.Primary>
       <Spreadsheet
         ref={spreadsheetRef}
         tabs={false}
