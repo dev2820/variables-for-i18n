@@ -80,10 +80,11 @@ export function SpreadSheet({
   return (
     <div className={styles.SpreadSheet}>
       {/**
-       * add variable 메뉴 추가하기
-       * data를 상태화하고, 필터에 따라 데이터 보여주기
-       * query를 props로 받고
-       * 변경에 따라 spreadsheet.current[0].search('app') 실행
+       * add variable 메뉴 위치 수정하기
+       *
+       * 필터기능
+       *  query를 props로 받고 필터에 따라 데이터 보여주기
+       *  변경에 따라 spreadsheet.current[0].search('app') 실행
        */}
       <Button.Primary
         onClick={() => {
