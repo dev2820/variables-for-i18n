@@ -113,12 +113,19 @@ class VariableCollectionSchema {
     }
   }
 
-  async deleteVariableById(variableKey: Variable['key']) {
+  async deleteVariableById(variableKey: Variable['key'] | Variable['key'][]) {
     try {
-      const variable = await figma.variables.getVariableByIdAsync(variableKey);
-      if (variable) {
-        variable.remove();
-      }
+      const variableKeys = Array.isArray(variableKey)
+        ? variableKey
+        : [variableKey];
+      const resolvedVariables = await Promise.all(
+        variableKeys.map((key) => figma.variables.getVariableByIdAsync(key)),
+      );
+      resolvedVariables.forEach((variable) => {
+        if (variable) {
+          variable.remove();
+        }
+      });
     } catch (err) {
       return false;
     }

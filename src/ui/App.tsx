@@ -186,9 +186,13 @@ function App() {
     }
   };
 
-  const handleDeleteRow = (index: number) => {
+  const handleDeleteRow = (index: number, numOfRows: number) => {
+    const deletedKeys = [];
+    for (let i = 0; i < numOfRows; i++) {
+      deletedKeys.push(vars[index + i].id);
+    }
     Channel.sendMessage(EventType.DeleteVariable, {
-      key: vars[index].id,
+      key: deletedKeys,
     });
   };
 

@@ -9,7 +9,7 @@ type SpreadSheetProps = {
   columns: { title: string; width: string }[];
   onChange: (index: number, data: any[]) => void;
   onAddRow: () => void;
-  onDeleteRow: (index: number) => void;
+  onDeleteRow: (index: number, numOfRows: number) => void;
 };
 
 export function SpreadSheet({
@@ -47,28 +47,22 @@ export function SpreadSheet({
     [],
   );
 
-  const handleDeleteRow = useCallback(
-    (spreadsheet: jspreadsheet.WorksheetInstance) => {
-      const newData = spreadsheet.getData();
-      const oldData = prevData.current;
-      const index = newData.findIndex((_, i) => {
-        return newData[i].some((v, j) => v !== oldData[i][j]);
-      });
-      if (index > -1) {
-        onDeleteRow?.(index);
-      }
-    },
-    [],
-  );
-
-  const contextmenu = (o, x, y, e, _, section) => {
+  const contextmenu = (o, x, y, e, items, section) => {
     // Reset all items
-    const items = [];
+    items = [];
+
     items.push({
       title: 'Delete Row',
       onclick: function () {
-        o.deleteRow(parseInt(y));
-        onDeleteRow(parseInt(y));
+        const [_, y1, __, y2] = o.getSelection();
+        const numOfRows = y2 - y1 + 1;
+
+        if (o.rows.length === 1 || numOfRows === o.rows.length) {
+          alert('Cannot delete the last row');
+          return;
+        }
+        o.deleteRow(parseInt(y1, 10), numOfRows);
+        onDeleteRow(parseInt(y1, 10), numOfRows);
       },
     });
 
@@ -93,14 +87,19 @@ export function SpreadSheet({
         allowMoveWorksheet={false}
         allowCreateWorksheet={false}
         allowAddWorksheet={false}
+        allowDeleteColumn={false}
+        allowInsertColumn={false}
+        allowInsertRow={false}
+        allowManualInsertColumn={false}
+        allowManualInsertRow={false}
+        allowSelect={false}
         search={true}
         onbeforechange={handleBeforeChange}
         onchange={handleChange}
         onbeforedeleterow={handleBeforeChange}
-        ondeleterow={handleDeleteRow}
       >
         <Worksheet
-          minDimensions={[2, 6]}
+          minDimensions={[1, 1]}
           allowComments={false}
           data={data}
           columns={columns}
