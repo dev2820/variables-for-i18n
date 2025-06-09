@@ -117,7 +117,7 @@ export function SpreadSheet({
           />
         </Spreadsheet>
       </div>
-      <Button.Primary onClick={onAddRow}>Add Variable</Button.Primary>
+      <Button.Neutral onClick={onAddRow}>Add Variable</Button.Neutral>
     </div>
   );
 }
