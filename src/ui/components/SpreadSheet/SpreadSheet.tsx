@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Spreadsheet, Worksheet } from '@jspreadsheet-ce/react';
 import { useJssStyle } from './useJssStyle';
 import { useJSuiteStyle } from './useJSuiteStyle';
@@ -11,6 +11,7 @@ type SpreadSheetProps = {
   onChange: (index: number, data: any[]) => void;
   onAddRow: () => void;
   onDeleteRow: (index: number, numOfRows: number) => void;
+  query?: string;
 };
 
 export function SpreadSheet({
@@ -19,6 +20,7 @@ export function SpreadSheet({
   onChange,
   onAddRow,
   onDeleteRow,
+  query,
 }: SpreadSheetProps) {
   const spreadsheetRef = useRef<jspreadsheet.WorksheetInstance>();
   const prevData = useRef<any[]>([]);
@@ -32,6 +34,12 @@ export function SpreadSheet({
       spreadsheetRef.current[0].setData(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (spreadsheetRef.current) {
+      spreadsheetRef.current[0].search(query);
+    }
+  }, [query]);
 
   const handleBeforeChange = useCallback(
     (spreadsheet: jspreadsheet.WorksheetInstance) => {
@@ -79,12 +87,6 @@ export function SpreadSheet({
 
   return (
     <div className={styles.SpreadSheet}>
-      {/**
-       *
-       * 필터기능
-       *  query를 props로 받고 필터에 따라 데이터 보여주기
-       *  변경에 따라 spreadsheet.current[0].search('app') 실행
-       */}
       <div className={styles.SpreadSheetContainer}>
         <Spreadsheet
           ref={spreadsheetRef}

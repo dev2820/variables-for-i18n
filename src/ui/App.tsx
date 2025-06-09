@@ -258,6 +258,7 @@ function App() {
           onChange={handleChangeSpreadSheet}
           onDeleteRow={handleDeleteRow}
           onAddRow={handleClickCreateDefaultI18n}
+          query={searchStr}
         />
       </div>
       <input
