@@ -15,7 +15,7 @@ import { Collection } from '@/shared/types/collection';
 type SpreadSheetProps = {
   collections: Collection[]; // [key, mode1, mode2, ...]
   onChange: (collectionId: string, index: number, data: any[]) => void;
-  onAddRow: () => void;
+  onAddRow: (collectionId: string) => void;
   onDeleteRow: (collectionId: string, index: number, numOfRows: number) => void;
   query?: string;
   canEdit: boolean;
@@ -29,6 +29,7 @@ export function SpreadSheet({
   query,
   canEdit,
 }: SpreadSheetProps) {
+  const [currentSheetIndex, setCurrentSheetIndex] = useState(0);
   const spreadsheetRef = useRef<jspreadsheet.WorksheetInstance[] | undefined>();
   const prevData = useRef<{ rows: VariableValue[][]; name: string }[]>([]);
 
@@ -111,6 +112,19 @@ export function SpreadSheet({
     [],
   );
 
+  const handleWorksheetOpen = useCallback(
+    (spreadsheet: jspreadsheet.WorksheetInstance, number: number) => {
+      console.log(spreadsheet, number);
+    },
+    [data],
+  );
+
+  const handleAddRow = useCallback(() => {
+    const activeWorksheet = spreadsheetRef.current[0].getWorksheetActive();
+    const collectionId = collections[activeWorksheet].id;
+    onAddRow(collectionId);
+  }, []);
+
   const contextmenu = (o, x, y, e, items, section) => {
     // Reset all items
     items = [];
@@ -178,7 +192,7 @@ export function SpreadSheet({
         </Spreadsheet>
       </div>
       {canEdit && (
-        <Button.Neutral onClick={onAddRow}>Add Variable</Button.Neutral>
+        <Button.Neutral onClick={handleAddRow}>Add Variable</Button.Neutral>
       )}
     </div>
   );

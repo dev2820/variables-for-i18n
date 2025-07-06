@@ -72,6 +72,12 @@ class VariableCollectionSchema {
       (v) => v.variableCollectionId === collectionId,
     );
   }
+  async getVariablesByCollectionId(collectionId: string) {
+    const localVariables = await figma.variables.getLocalVariablesAsync();
+    return localVariables.filter(
+      (v) => v.variableCollectionId === collectionId,
+    );
+  }
   async getVariableById(variableKey: Variable['key']) {
     return await figma.variables.getVariableByIdAsync(variableKey);
   }
@@ -124,17 +130,22 @@ class VariableCollectionSchema {
       return false;
     }
   }
-  async createDefaultVariable() {
+  async createDefaultVariable(collectionId: string) {
     try {
-      const collection = await this.getCollection();
-      const variables = await this.getVariables();
+      const collection = await figma.variables.getVariableCollectionByIdAsync(
+        collectionId,
+      );
+      if (!collection) {
+        throw Error('collection not found');
+      }
+
+      const variables = await this.getVariablesByCollectionId(collectionId);
       const variableNames = variables.map((v) => v.name);
       const defaultName = createDefaultName(variableNames, '18n_key');
       figma.variables.createVariable(defaultName, collection, 'STRING');
 
       return true;
     } catch (err) {
-      console.error(err);
       return false;
     }
   }

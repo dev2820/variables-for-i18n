@@ -109,70 +109,51 @@ function setup() {
     if (msg.type === EventType.ChangeVariableValue) {
       const { key, mode, value } = msg.payload;
       await i18nCollection.updateVariableById(key, mode, value);
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
+      const collections = await i18nCollection.getCollections();
 
       figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
       });
     }
     if (msg.type === EventType.ChangeVariableName) {
       const { key, name } = msg.payload;
       await i18nCollection.updateVariableNameById(key, name);
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
+      const collections = await i18nCollection.getCollections();
 
       figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
       });
     }
     if (msg.type === EventType.CreateVariable) {
       const { name, valuesByMode } = msg.payload;
       await i18nCollection.createVariable(name, valuesByMode);
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
+      const collections = await i18nCollection.getCollections();
 
       figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
       });
     }
     if (msg.type === EventType.CreateDefaultVariable) {
-      await i18nCollection.createDefaultVariable();
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
+      const { collectionId } = msg.payload;
+      await i18nCollection.createDefaultVariable(collectionId);
+      const collections = await i18nCollection.getCollections();
 
       figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
       });
     }
     if (msg.type === EventType.DeleteVariable) {
       const { key } = msg.payload;
       await i18nCollection.deleteVariableById(key);
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
+      const collections = await i18nCollection.getCollections();
 
       figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
       });
     }
   };

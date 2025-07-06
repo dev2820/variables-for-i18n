@@ -115,8 +115,10 @@ function App() {
     inputRef.current.dataset['hidden'] = 'true';
   };
 
-  const handleClickCreateDefaultI18n = () => {
-    Channel.sendMessage(EventType.CreateDefaultVariable);
+  const handleClickCreateDefaultI18n = (collectionId: string) => {
+    Channel.sendMessage(EventType.CreateDefaultVariable, {
+      collectionId,
+    });
   };
 
   const handleClickOutside = (e: MouseEvent<HTMLElement>) => {
