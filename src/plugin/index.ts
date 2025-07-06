@@ -32,6 +32,40 @@ function setup() {
   });
 
   figma.ui.onmessage = async (msg) => {
+    if (msg.type === EventType.CheckPermission) {
+      try {
+        const collections =
+          await figma.variables.getLocalVariableCollectionsAsync();
+        if (collections.length > 0) {
+          const firstCollection = collections[0];
+          const variableIds = firstCollection.variableIds;
+
+          if (variableIds.length > 0) {
+            const firstVariable = await figma.variables.getVariableByIdAsync(
+              variableIds[0],
+            );
+            if (firstVariable) {
+              const modeId = Object.keys(firstVariable.valuesByMode)[0];
+              if (modeId) {
+                const originalValue = firstVariable.valuesByMode[modeId];
+                firstVariable.setValueForMode(modeId, originalValue);
+              }
+            }
+          }
+        }
+        figma.ui.postMessage({
+          type: EventType.UserPermission,
+          payload: true,
+        });
+      } catch (err) {
+        console.log('err', err);
+        // no permission
+        figma.ui.postMessage({
+          type: EventType.UserPermission,
+          payload: false,
+        });
+      }
+    }
     if (msg.type === EventType.ResizeWindow) {
       figma.ui.resize(msg.size.w, msg.size.h);
       figma.clientStorage.setAsync('size', msg.size).catch((err) => {}); // save size

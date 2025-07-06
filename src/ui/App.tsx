@@ -26,6 +26,7 @@ import { prettyPrintJson } from './utils/pretty-print-json';
 import { Mode } from '@/shared/types/mode';
 import { varsToJson } from '@/shared/utils/vars-to-json';
 import { SpreadSheet } from './components/SpreadSheet/SpreadSheet';
+import { useUserPermission } from './hooks/useUserPermission';
 
 Channel.init();
 
@@ -37,6 +38,7 @@ function App() {
 
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
+  const { canEdit } = useUserPermission();
   const { isLoaded, modes, vars } = useI18nVariables();
   const [isCheckedOnlySearchedResult, setIsCheckedOnlySearchedResult] =
     useState<boolean>(true);
@@ -253,6 +255,7 @@ function App() {
       />
       <div className={styles.VariablesContainer}>
         <SpreadSheet
+          canEdit={canEdit}
           data={data}
           columns={columns}
           onChange={handleChangeSpreadSheet}

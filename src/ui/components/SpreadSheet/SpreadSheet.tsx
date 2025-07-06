@@ -12,6 +12,7 @@ type SpreadSheetProps = {
   onAddRow: () => void;
   onDeleteRow: (index: number, numOfRows: number) => void;
   query?: string;
+  canEdit: boolean;
 };
 
 export function SpreadSheet({
@@ -21,6 +22,7 @@ export function SpreadSheet({
   onAddRow,
   onDeleteRow,
   query,
+  canEdit,
 }: SpreadSheetProps) {
   const spreadsheetRef = useRef<jspreadsheet.WorksheetInstance>();
   const prevData = useRef<any[]>([]);
@@ -117,7 +119,9 @@ export function SpreadSheet({
           />
         </Spreadsheet>
       </div>
-      <Button.Neutral onClick={onAddRow}>Add Variable</Button.Neutral>
+      {canEdit && (
+        <Button.Neutral onClick={onAddRow}>Add Variable</Button.Neutral>
+      )}
     </div>
   );
 }

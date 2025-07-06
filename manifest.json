@@ -5,6 +5,7 @@
   "main": "dist/plugin.js",
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
+  "permissions": ["currentuser"],
   "editorType": ["figma", "dev"],
   "ui": "dist/ui.html",
   "networkAccess": {

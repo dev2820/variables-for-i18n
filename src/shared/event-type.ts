@@ -1,4 +1,6 @@
 const EventType = {
+  CheckPermission: 'CheckPermission',
+  UserPermission: 'UserPermission',
   ResizeWindow: 'ResizeWindow',
   RequestToJSON: 'RequestToJSON',
   SuccessToJSON: 'SuccessToJSON',
