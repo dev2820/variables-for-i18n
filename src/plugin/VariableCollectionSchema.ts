@@ -153,6 +153,7 @@ class VariableCollectionSchema {
         }
       });
     } catch (err) {
+      console.error(err);
       return false;
     }
   }

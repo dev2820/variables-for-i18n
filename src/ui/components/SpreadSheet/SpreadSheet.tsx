@@ -16,7 +16,7 @@ type SpreadSheetProps = {
   collections: Collection[]; // [key, mode1, mode2, ...]
   onChange: (collectionId: string, index: number, data: any[]) => void;
   onAddRow: () => void;
-  onDeleteRow: (index: number, numOfRows: number) => void;
+  onDeleteRow: (collectionId: string, index: number, numOfRows: number) => void;
   query?: string;
   canEdit: boolean;
 };
@@ -117,6 +117,8 @@ export function SpreadSheet({
 
     if (section === 'tabs') return false;
     if (!canEdit) return false;
+    const worksheetName = o.options.worksheetName;
+    const collectionId = collections.find((c) => c.name === worksheetName)?.id;
 
     items.push({
       title: 'Delete Row',
@@ -129,7 +131,7 @@ export function SpreadSheet({
           return;
         }
         o.deleteRow(parseInt(y1, 10), numOfRows);
-        onDeleteRow(parseInt(y1, 10), numOfRows);
+        onDeleteRow(collectionId, parseInt(y1, 10), numOfRows);
       },
     });
 

@@ -170,10 +170,15 @@ function App() {
     [modes],
   );
 
-  const handleDeleteRow = (index: number, numOfRows: number) => {
+  const handleDeleteRow = (
+    collectionId: string,
+    index: number,
+    numOfRows: number,
+  ) => {
     const deletedKeys = [];
+    const collection = collections.find((c) => c.id === collectionId);
     for (let i = 0; i < numOfRows; i++) {
-      deletedKeys.push(vars[index + i].id);
+      deletedKeys.push(collection.variables[index + i].id);
     }
     Channel.sendMessage(EventType.DeleteVariable, {
       key: deletedKeys,
