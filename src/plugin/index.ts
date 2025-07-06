@@ -70,6 +70,14 @@ function setup() {
       figma.ui.resize(msg.size.w, msg.size.h);
       figma.clientStorage.setAsync('size', msg.size).catch((err) => {}); // save size
     }
+    if (msg.type === EventType.RequestLoadCollectionData) {
+      const collections = await i18nCollection.getCollections();
+
+      figma.ui.postMessage({
+        type: EventType.ResponseLoadCollectionData,
+        payload: collections,
+      });
+    }
     if (msg.type === EventType.RequestLoadVariableData) {
       const modes = await i18nCollection.getModes();
       const vars = await i18nCollection.getVariables();

@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Channel } from '../utils/channel';
 import EventType from '../../shared/event-type';
+import { Collection } from '@/shared/types/collection';
 
-export const useUserPermission = () => {
+export const useI18nCollections = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
     setIsLoaded(false);
     const removeListeners = [];
     removeListeners.push(
-      Channel.onMessage(EventType.UserPermission, (payload) => {
-        const data = payload;
-        setCanEdit(data);
+      Channel.onMessage(EventType.ResponseLoadCollectionData, (payload) => {
+        const data = payload as Collection[];
+        setCollections(data);
         setIsLoaded(true);
       }),
     );
 
-    Channel.sendMessage(EventType.CheckPermission);
+    Channel.sendMessage(EventType.RequestLoadCollectionData);
 
     return () => {
       removeListeners.forEach((l) => l());
@@ -26,6 +27,6 @@ export const useUserPermission = () => {
 
   return {
     isLoaded,
-    canEdit,
+    collections,
   };
 };

@@ -2,6 +2,17 @@ export async function loadVariables(variableId: string): Promise<Variable[]> {
   return await figma.variables.getLocalVariablesAsync();
 }
 
+export const toVariableData = (variable: Variable) => {
+  return {
+    id: variable.id,
+    resolvedType: variable.resolvedType,
+    name: variable.name,
+    key: variable.key,
+    description: variable.description,
+    valuesByMode: variable.valuesByMode,
+  };
+};
+
 export function resolveVariableMode(variableId: Variable['id']) {
   // 1) 변수 객체 찾기
   // const variable = figma.variables.getVariableById(variableId);

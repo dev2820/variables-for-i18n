@@ -3087,4 +3087,8 @@ div[data-before]:before {
     display: flex;
     flex-wrap: wrap;
 }
+
+.jtabs-controls {
+    display: none !important;
+}
 `;

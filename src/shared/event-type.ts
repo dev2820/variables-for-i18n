@@ -4,6 +4,8 @@ const EventType = {
   ResizeWindow: 'ResizeWindow',
   RequestToJSON: 'RequestToJSON',
   SuccessToJSON: 'SuccessToJSON',
+  RequestLoadCollectionData: 'RequestLoadCollectionData',
+  ResponseLoadCollectionData: 'ResponseLoadCollectionData',
   RequestLoadVariableData: 'RequestLoadVariableData',
   UpdateVariableData: 'UpdateVariableData',
   ChangeVariableValue: 'ChangeVariableValue',

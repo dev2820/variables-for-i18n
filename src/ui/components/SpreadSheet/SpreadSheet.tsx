@@ -1,14 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Spreadsheet, Worksheet } from '@jspreadsheet-ce/react';
 import { useJssStyle } from './useJssStyle';
 import { useJSuiteStyle } from './useJSuiteStyle';
 import * as styles from './SpreadSheet.css';
 import { Button } from '../Button';
+import { Collection } from '@/shared/types/collection';
 
 type SpreadSheetProps = {
-  data: any[]; // [key, mode1, mode2, ...]
-  columns: { title: string; width: string }[];
-  onChange: (index: number, data: any[]) => void;
+  collections: Collection[]; // [key, mode1, mode2, ...]
+  onChange: (collectionId: string, index: number, data: any[]) => void;
   onAddRow: () => void;
   onDeleteRow: (index: number, numOfRows: number) => void;
   query?: string;
@@ -16,16 +22,40 @@ type SpreadSheetProps = {
 };
 
 export function SpreadSheet({
-  data,
-  columns,
+  collections,
   onChange,
   onAddRow,
   onDeleteRow,
   query,
   canEdit,
 }: SpreadSheetProps) {
-  const spreadsheetRef = useRef<jspreadsheet.WorksheetInstance>();
-  const prevData = useRef<any[]>([]);
+  const spreadsheetRef = useRef<jspreadsheet.WorksheetInstance[] | undefined>();
+  const prevData = useRef<{ rows: VariableValue[][]; name: string }[]>([]);
+
+  const data = useMemo(() => {
+    return collections.map((collection) => {
+      const variables = collection.variables;
+      return {
+        name: collection.name,
+        rows: variables.map((v) => [
+          v.name,
+          ...collection.modes.map((m) => v.valuesByMode[m.modeId]),
+        ]),
+      };
+    });
+  }, [collections]);
+
+  const columnList = useMemo(() => {
+    return collections.map((c) => {
+      return [
+        { title: 'Key', width: '300px' },
+        ...c.modes.map((mode) => ({
+          title: mode.name,
+          width: '200px',
+        })),
+      ];
+    });
+  }, [collections]);
 
   useJssStyle();
   useJSuiteStyle();
@@ -33,33 +63,49 @@ export function SpreadSheet({
   useEffect(() => {
     if (spreadsheetRef.current) {
       prevData.current = data;
-      spreadsheetRef.current[0].setData(data);
+      spreadsheetRef.current.forEach((worksheet, index) => {
+        worksheet.setData(data[index].rows as string[][]);
+      });
     }
   }, [data]);
 
   useEffect(() => {
     if (spreadsheetRef.current) {
-      spreadsheetRef.current[0].search(query);
+      spreadsheetRef.current.forEach((worksheet) => {
+        worksheet.search(query);
+      });
     }
   }, [query]);
 
   const handleBeforeChange = useCallback(
     (spreadsheet: jspreadsheet.WorksheetInstance) => {
-      prevData.current = spreadsheet.getData();
+      const worksheetName = spreadsheet.options.worksheetName;
+      const target = prevData.current.find(
+        (sheet) => sheet.name === worksheetName,
+      );
+      if (target) {
+        target.rows = spreadsheet.getData();
+      }
     },
     [],
   );
 
   const handleChange = useCallback(
     (spreadsheet: jspreadsheet.WorksheetInstance) => {
+      const worksheetName = spreadsheet.options.worksheetName;
+      const collectionId = collections.find(
+        (c) => c.name === worksheetName,
+      )?.id;
+      const oldData = prevData.current.find(
+        (c) => c.name === worksheetName,
+      )?.rows;
       const newData = spreadsheet.getData();
-      const oldData = prevData.current;
       const index = newData.findIndex((_, i) => {
         return newData[i].some((v, j) => v !== oldData[i][j]);
       });
       const changedData = newData[index];
       if (changedData) {
-        onChange?.(index, changedData);
+        onChange?.(collectionId, index, changedData);
       }
     },
     [],
@@ -68,6 +114,9 @@ export function SpreadSheet({
   const contextmenu = (o, x, y, e, items, section) => {
     // Reset all items
     items = [];
+
+    if (section === 'tabs') return false;
+    if (!canEdit) return false;
 
     items.push({
       title: 'Delete Row',
@@ -92,7 +141,7 @@ export function SpreadSheet({
       <div className={styles.SpreadSheetContainer}>
         <Spreadsheet
           ref={spreadsheetRef}
-          tabs={false}
+          tabs={true}
           toolbar={false}
           contextMenu={contextmenu}
           allowDeleteWorksheet={false}
@@ -111,12 +160,19 @@ export function SpreadSheet({
           onchange={handleChange}
           onbeforedeleterow={handleBeforeChange}
         >
-          <Worksheet
-            minDimensions={[1, 1]}
-            allowComments={false}
-            data={data}
-            columns={columns}
-          />
+          {data.map((d, index) => {
+            return (
+              <Worksheet
+                key={d.name}
+                minDimensions={[1, 1]}
+                allowComments={false}
+                data={d.rows}
+                columns={columnList[index]}
+                worksheetName={d.name}
+                worksheetId={d.name}
+              />
+            );
+          })}
         </Spreadsheet>
       </div>
       {canEdit && (

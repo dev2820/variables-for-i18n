@@ -1,10 +1,36 @@
 import { assignStr } from '@/shared/utils/assign-str';
+import { toVariableData } from './utils';
 
 class VariableCollectionSchema {
   private collectionName: string;
   private cachedCollectionId: string;
   constructor(collectionName: string) {
     this.collectionName = collectionName;
+  }
+
+  async getCollections() {
+    const collections =
+      await figma.variables.getLocalVariableCollectionsAsync();
+    const i18nCollections = collections.filter((col) =>
+      col.name.endsWith(this.collectionName),
+    );
+
+    const result = i18nCollections.map(async (collection) => {
+      const id = collection.id;
+      const modes = collection.modes;
+      const localVariables = await figma.variables.getLocalVariablesAsync();
+      const variables = localVariables
+        .filter((v) => v.variableCollectionId === id)
+        .map(toVariableData);
+
+      return {
+        id,
+        name: collection.name,
+        modes,
+        variables,
+      };
+    });
+    return await Promise.all(result);
   }
 
   async getCollection() {

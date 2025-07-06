@@ -27,6 +27,7 @@ import { Mode } from '@/shared/types/mode';
 import { varsToJson } from '@/shared/utils/vars-to-json';
 import { SpreadSheet } from './components/SpreadSheet/SpreadSheet';
 import { useUserPermission } from './hooks/useUserPermission';
+import { useI18nCollections } from './hooks/useI18nCollections';
 
 Channel.init();
 
@@ -40,6 +41,7 @@ function App() {
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { canEdit } = useUserPermission();
   const { isLoaded, modes, vars } = useI18nVariables();
+  const { collections } = useI18nCollections();
   const [isCheckedOnlySearchedResult, setIsCheckedOnlySearchedResult] =
     useState<boolean>(true);
 
@@ -77,31 +79,6 @@ function App() {
   const cornerHandlers = useResizeCorner();
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleClickCell = (e: MouseEvent<HTMLElement>) => {
-    if (!inputRef.current) {
-      return;
-    }
-
-    const $target = e.currentTarget;
-    const value = $target.textContent;
-    const typeOfCell = $target.dataset['type'];
-    const idOfCell = $target.dataset['id'];
-
-    const rect = $target.getBoundingClientRect();
-    inputRef.current.value = value;
-    inputRef.current.style.left = `${rect.left}px`;
-    inputRef.current.style.top = `${rect.top}px`;
-    inputRef.current.style.width = `${rect.width}px`;
-    inputRef.current.style.height = `${rect.height}px`;
-    inputRef.current.dataset['type'] = typeOfCell;
-    inputRef.current.dataset['id'] = idOfCell;
-    inputRef.current.dataset['hidden'] = 'false';
-
-    if (typeOfCell === 'value') {
-      const mode = $target.dataset['modeId'];
-      inputRef.current.dataset['modeId'] = mode;
-    }
-  };
 
   const handleKeyDownCell = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === 'Escape') {
@@ -138,12 +115,6 @@ function App() {
     inputRef.current.dataset['hidden'] = 'true';
   };
 
-  const handleClickDeleteCell = (e: MouseEvent<HTMLButtonElement>) => {
-    Channel.sendMessage(EventType.DeleteVariable, {
-      key: e.currentTarget.dataset['id'],
-    });
-  };
-
   const handleClickCreateDefaultI18n = () => {
     Channel.sendMessage(EventType.CreateDefaultVariable);
   };
@@ -171,9 +142,10 @@ function App() {
   }, [vars]);
 
   const handleChangeSpreadSheet = useCallback(
-    (index: number, d: string[]) => {
+    (collectionId: string, index: number, d: string[]) => {
       // 일단 변화는 1개만 일어난다고 가정한다.
-      const originalData = varsRef.current[index];
+      const collection = collections.find((c) => c.id === collectionId);
+      const originalData = collection.variables[index];
       const id = originalData.id;
       if (originalData) {
         if (originalData.name !== d[0]) {
@@ -183,12 +155,14 @@ function App() {
           });
         }
       }
-      for (let i = 0; i < modes.length; i++) {
-        if (d[i + 1] !== originalData.valuesByMode[modes[i].modeId]) {
+      for (let i = 0; i < collection.modes.length; i++) {
+        if (
+          d[i + 1] !== originalData.valuesByMode[collection.modes[i].modeId]
+        ) {
           Channel.sendMessage(EventType.ChangeVariableValue, {
             value: d[i + 1],
             key: id,
-            mode: modes[i].modeId,
+            mode: collection.modes[i].modeId,
           });
         }
       }
@@ -205,24 +179,6 @@ function App() {
       key: deletedKeys,
     });
   };
-
-  const columns = useMemo(
-    () => [
-      { title: 'Key', width: '300px' },
-      ...modes.map((mode) => ({
-        title: mode.name,
-        width: '200px',
-      })),
-    ],
-    [modes],
-  );
-
-  const data = useMemo(() => {
-    return vars.map((v) => [
-      v.name,
-      ...modes.map((mode) => v.valuesByMode[mode.modeId]),
-    ]);
-  }, [vars, modes]);
 
   if (!isLoaded) {
     return <div>Please create a variable collection called 'i18n' first</div>;
@@ -256,8 +212,7 @@ function App() {
       <div className={styles.VariablesContainer}>
         <SpreadSheet
           canEdit={canEdit}
-          data={data}
-          columns={columns}
+          collections={collections}
           onChange={handleChangeSpreadSheet}
           onDeleteRow={handleDeleteRow}
           onAddRow={handleClickCreateDefaultI18n}
