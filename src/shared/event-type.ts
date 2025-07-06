@@ -6,8 +6,6 @@ const EventType = {
   SuccessToJSON: 'SuccessToJSON',
   RequestLoadCollectionData: 'RequestLoadCollectionData',
   ResponseLoadCollectionData: 'ResponseLoadCollectionData',
-  RequestLoadVariableData: 'RequestLoadVariableData',
-  UpdateVariableData: 'UpdateVariableData',
   ChangeVariableValue: 'ChangeVariableValue',
   ChangeVariableName: 'ChangeVariableName',
   CreateVariable: 'CreateVariable',

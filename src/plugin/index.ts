@@ -16,16 +16,6 @@ function showPluginUI() {
     .catch((err) => {});
 }
 
-const toVariableData = (variable: Variable) => {
-  return {
-    id: variable.id,
-    resolvedType: variable.resolvedType,
-    name: variable.name,
-    key: variable.key,
-    description: variable.description,
-    valuesByMode: variable.valuesByMode,
-  };
-};
 function setup() {
   figma.on('run', async () => {
     showPluginUI();
@@ -76,18 +66,6 @@ function setup() {
       figma.ui.postMessage({
         type: EventType.ResponseLoadCollectionData,
         payload: collections,
-      });
-    }
-    if (msg.type === EventType.RequestLoadVariableData) {
-      const modes = await i18nCollection.getModes();
-      const vars = await i18nCollection.getVariables();
-
-      figma.ui.postMessage({
-        type: EventType.UpdateVariableData,
-        payload: {
-          modes: modes,
-          vars: vars.map(toVariableData),
-        },
       });
     }
     if (msg.type === EventType.RequestToJSON) {

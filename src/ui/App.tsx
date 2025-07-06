@@ -12,7 +12,6 @@ import { Button } from './components/Button';
 import EventType from '../shared/event-type';
 import { Channel } from './utils/channel';
 import styles from './App.css';
-import { useI18nVariables } from './hooks/useI18nVariables';
 import { themeClass } from './theme.css';
 import * as patterns from './pattern.css';
 import { Corner } from './components/Corner/Corner';
@@ -40,12 +39,12 @@ function App() {
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { canEdit } = useUserPermission();
-  const { isLoaded, modes, vars } = useI18nVariables();
-  const { collections } = useI18nCollections();
+  const { collections, isLoaded } = useI18nCollections();
   const [isCheckedOnlySearchedResult, setIsCheckedOnlySearchedResult] =
     useState<boolean>(true);
 
   const filteredJson = useMemo(() => {
+    const vars = collections[0].variables;
     if (!isCheckedOnlySearchedResult) return varsToJson(vars, currentMode);
     else {
       if (searchStr.length <= 0) {
@@ -70,7 +69,7 @@ function App() {
   const handleClickExtract = (e: MouseEvent<HTMLButtonElement>) => {
     const modeId = e.currentTarget.dataset['modeId'];
     setCurrentMode(modeId);
-    setJson(varsToJson(vars, modeId));
+    setJson(varsToJson(collections[0].variables, modeId));
     copyJsonDialogRef.current.showModal();
   };
 
@@ -138,11 +137,6 @@ function App() {
     setIsCheckedOnlySearchedResult((isChecked) => !isChecked);
   };
 
-  const varsRef = useRef<Variable[]>([]);
-  useEffect(() => {
-    varsRef.current = vars;
-  }, [vars]);
-
   const handleChangeSpreadSheet = useCallback(
     (collectionId: string, index: number, d: string[]) => {
       // 일단 변화는 1개만 일어난다고 가정한다.
@@ -169,7 +163,7 @@ function App() {
         }
       }
     },
-    [modes],
+    [],
   );
 
   const handleDeleteRow = (
@@ -198,7 +192,7 @@ function App() {
     >
       <section>
         <menu className={styles.ExtractMenu}>
-          {modes.map((mode) => (
+          {collections[0].modes.map((mode) => (
             <li key={mode.modeId}>
               <Button.Primary
                 onClick={handleClickExtract}
