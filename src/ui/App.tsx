@@ -29,23 +29,25 @@ Channel.init();
 
 function App() {
   const [jsonList, setJsonList] = useState<object[]>([]);
-  const [currentModeName, setCurrentModeName] = useState<
-    Mode['name'] | undefined
-  >(undefined);
 
   const [searchStr, setSearchStr] = useState<string>('');
   const { ref: copyJsonDialogRef, onClose: onCloseDialog } = useDialog();
   const { canEdit } = useUserPermission();
   const { collections, isLoaded } = useI18nCollections();
+  const [currentModeName, setCurrentModeName] = useState<
+    Mode['name'] | undefined
+  >(undefined);
+
   const filteredJsonList = useMemo(() => {
+    const mode = currentModeName ?? collections[0]?.modes[0].name;
     if (collections.length === 0) return [];
     else {
       if (searchStr.length <= 0) {
-        return collections.map((c) => varsToJson(c, currentModeName));
+        return collections.map((c) => varsToJson(c, mode));
       }
 
       return collections.map((collection) =>
-        varsToJson(collection, currentModeName, (name, value) => {
+        varsToJson(collection, mode, (name, value) => {
           if (searchStr.length > 0) {
             if (name.indexOf(searchStr) >= 0) return true;
             return value.indexOf(searchStr) >= 0;
