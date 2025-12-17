@@ -11,8 +11,10 @@ class VariableCollectionSchema {
   async getCollections() {
     const collections =
       await figma.variables.getLocalVariableCollectionsAsync();
-    const i18nCollections = collections.filter((col) =>
-      col.name.endsWith(this.collectionName),
+    const i18nCollections = collections.filter(
+      (col) =>
+        col.name.endsWith(this.collectionName) ||
+        col.name.startsWith(this.collectionName),
     );
 
     const result = i18nCollections.map(async (collection) => {
