@@ -18,41 +18,11 @@ A Figma plugin for managing internationalization (i18n) variables in your design
 
 ### From Figma Community
 
+Link: https://www.figma.com/community/plugin/1465032483656605623
+
 1. Search for "Variables for i18n" in the Figma Community
 2. Install the plugin
 3. Run it from the Plugins menu
-
-### Development Setup
-
-1. Clone this repository
-
-   ```bash
-   git clone <repository-url>
-   cd variables-for-i18n
-   ```
-
-2. Install dependencies
-
-   ```bash
-   pnpm install
-   ```
-
-3. Build the plugin
-
-   ```bash
-   pnpm run build
-   ```
-
-   Or run in watch mode for development
-
-   ```bash
-   pnpm run watch
-   ```
-
-4. Import the plugin in Figma
-   - Open Figma Desktop App
-   - Go to Plugins > Development > Import plugin from manifest
-   - Select the `manifest.json` file from this project
 
 ## Usage
 
